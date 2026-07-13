@@ -1,6 +1,6 @@
-# KAWAN - Portal Layanan & Sistem Informasi Kas RT
+# KAWAN - Komunikasi & Aplikasi Warga Nyaman
 
-KAWAN adalah sistem manajemen kas dan administrasi rukun tetangga yang dirancang untuk transparansi dan kemudahan pengelolaan kas warga. Proyek ini dibagi menjadi dua bagian utama: **Backend (BE)** dan **Frontend (FE)**.
+KAWAN (Komunikasi & Aplikasi Warga Nyaman) adalah platform sistem manajemen kas dan administrasi rukun tetangga yang dirancang untuk transparansi dan kemudahan pengelolaan kas warga. Proyek ini dibagi menjadi dua bagian utama: **Backend (BE)** dan **Frontend (FE)**.
 
 ---
 
