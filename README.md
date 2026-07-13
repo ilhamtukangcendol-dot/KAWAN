@@ -1,6 +1,6 @@
-# SIKAS - Sistem Informasi Kas RT
+# KAWAN - Portal Layanan & Sistem Informasi Kas RT
 
-SIKAS adalah sistem manajemen kas dan administrasi rukun tetangga yang dirancang untuk transparansi dan kemudahan pengelolaan kas warga. Proyek ini dibagi menjadi dua bagian utama: **Backend (BE)** dan **Frontend (FE)**.
+KAWAN adalah sistem manajemen kas dan administrasi rukun tetangga yang dirancang untuk transparansi dan kemudahan pengelolaan kas warga. Proyek ini dibagi menjadi dua bagian utama: **Backend (BE)** dan **Frontend (FE)**.
 
 ---
 
@@ -16,8 +16,8 @@ Proyek ini terbagi menjadi dua direktori utama:
 
 ### 1. Kloning Repositori
 ```bash
-git clone https://github.com/ilhamtukangcendol-dot/SIKAS.git
-cd SIKAS
+git clone https://github.com/ilhamtukangcendol-dot/KAWAN.git
+cd KAWAN
 ```
 
 ---
@@ -89,4 +89,4 @@ Sandi default untuk seluruh akun di bawah ini adalah **`password`**:
 
 ---
 
-Built with ♥ by SIKAS Developer Community © 2026.
+Built with ♥ by KAWAN Developer Community © 2026.
