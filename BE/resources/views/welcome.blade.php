@@ -2,7 +2,7 @@
 <html lang="id" class="scroll-smooth">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>KAWAN 2026 - Portal Layanan & Rembuk RT 01 / RW 05</title>
     
     <!-- Fonts -->
@@ -170,6 +170,7 @@
 <body class="bg-slate-950 text-slate-100 antialiased selection:bg-rose-600 selection:text-white bg-grid-pattern relative min-h-screen overflow-x-hidden" x-data="{ 
     activeCategory: 'semua',
     theme: localStorage.getItem('theme') || 'dark',
+    mobileMenuOpen: false,
     init() {
         this.applyTheme();
     },
@@ -195,20 +196,20 @@
     <div class="absolute top-[85%] left-[-12%] w-[600px] h-[600px] glow-blob glow-blob-rose"></div>
 
     <!-- NAVBAR INDONESIAN VIBE WITH SHORTCUTS -->
-    <nav class="sticky top-0 z-50 backdrop-blur-md bg-slate-950/90 border-b border-slate-800/80 py-3.5 px-6 md:px-12 flex items-center justify-between">
+    <nav class="sticky top-0 z-50 backdrop-blur-md bg-slate-950/90 border-b border-slate-800/80 py-3.5 px-4 md:px-12 flex items-center justify-between">
         <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 bg-gradient-to-tr from-rose-600 to-red-700 rounded-2xl flex items-center justify-center shadow-lg shadow-rose-600/30">
+            <div class="w-10 h-10 bg-gradient-to-tr from-rose-600 to-red-700 rounded-2xl flex items-center justify-center shadow-lg shadow-rose-600/30 shrink-0">
                 <span class="text-xl">🇮🇩</span>
             </div>
             <div>
-                <h1 class="text-xl font-black tracking-tighter text-white flex items-center gap-1.5">
-                    KAWAN<span class="text-rose-400 text-[9px] font-black px-1.5 py-0.5 bg-rose-500/10 border border-rose-500/30 rounded-md">RT.01/RW.05</span>
+                <h1 class="text-lg md:text-xl font-black tracking-tighter text-white flex items-center gap-1.5 leading-none">
+                    KAWAN<span class="text-rose-400 text-[9px] font-black px-1.5 py-0.5 bg-rose-500/10 border border-rose-500/30 rounded-md shrink-0">RT.01/RW.05</span>
                 </h1>
-                <p class="text-[8px] font-black text-slate-400 tracking-[0.05em] uppercase">Komunikasi & Aplikasi Warga Nyaman</p>
+                <p class="text-[8px] font-black text-slate-400 tracking-[0.05em] uppercase mt-0.5">Komunikasi & Aplikasi Warga Nyaman</p>
             </div>
         </div>
 
-        <!-- NAVIGATION SHORTCUT MENU LINKS -->
+        <!-- NAVIGATION SHORTCUT MENU LINKS (DESKTOP) -->
         <div class="hidden lg:flex items-center space-x-6 text-xs font-bold text-slate-300">
             <a href="#hero" class="hover:text-rose-400 transition">🏠 Beranda</a>
             <a href="#tentang" class="hover:text-rose-400 transition">🏛️ Tentang RT</a>
@@ -218,7 +219,7 @@
             <a href="#kontak" class="hover:text-rose-400 transition">📞 Kontak</a>
         </div>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 md:gap-3">
             <!-- Theme Toggle Button -->
             <button @click="toggleTheme()" class="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition border border-slate-800 shrink-0 flex items-center justify-center" aria-label="Toggle Theme">
                 <!-- Sun Icon (shown in dark mode) -->
@@ -230,24 +231,77 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
                 </svg>
             </button>
+
+            <!-- Actions (Desktop/Tablet) -->
+            <div class="hidden sm:flex items-center gap-2 md:gap-3">
+                @if (Route::has('login'))
+                    @auth
+                        <a href="{{ Auth::user()->role == 1 ? route('superadmin.dashboard') : (Auth::user()->role == 2 ? route('ketua.dashboard') : (Auth::user()->role == 3 ? route('bendahara.dashboard') : route('warga.dashboard'))) }}" class="px-4 py-2.5 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-rose-600/25 transition shrink-0">
+                            🏛️ Dashboard
+                        </a>
+                    @else
+                        <a href="{{ route('login') }}" class="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-2xl transition border border-slate-800 shrink-0">
+                            Masuk Warga
+                        </a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" class="px-4 py-2.5 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-rose-600/25 transition shrink-0">
+                                Daftar Akun
+                            </a>
+                        @endif
+                    @endauth
+                @endif
+            </div>
+
+            <!-- Hamburger Button (Mobile) -->
+            <button @click="mobileMenuOpen = !mobileMenuOpen" class="sm:hidden p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition border border-slate-800 shrink-0 flex items-center justify-center" aria-label="Toggle Menu">
+                <svg x-show="!mobileMenuOpen" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+                <svg x-show="mobileMenuOpen" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display: none;" x-cloak>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MOBILE MENU DROPDOWN -->
+    <div x-show="mobileMenuOpen" 
+         x-transition:enter="transition ease-out duration-200" 
+         x-transition:enter-start="opacity-0 -translate-y-4" 
+         x-transition:enter-end="opacity-100 translate-y-0" 
+         x-transition:leave="transition ease-in duration-150" 
+         x-transition:leave-start="opacity-100 translate-y-0" 
+         x-transition:leave-end="opacity-0 -translate-y-4" 
+         class="sm:hidden fixed top-[73px] left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-md border-b border-slate-800/80 p-6 space-y-4 flex flex-col shadow-2xl" 
+         style="display: none;" 
+         x-cloak>
+        <div class="flex flex-col space-y-3 text-sm font-bold text-slate-300">
+            <a href="#hero" @click="mobileMenuOpen = false" class="hover:text-rose-400 transition py-1">🏠 Beranda</a>
+            <a href="#tentang" @click="mobileMenuOpen = false" class="hover:text-rose-400 transition py-1">🏛️ Tentang RT</a>
+            <a href="#umkm-kategori" @click="mobileMenuOpen = false" class="hover:text-rose-400 transition py-1">🏪 Katalog UMKM (10)</a>
+            <a href="#pengumuman" @click="mobileMenuOpen = false" class="hover:text-rose-400 transition py-1">📢 Pengumuman</a>
+            <a href="#program-wilayah" @click="mobileMenuOpen = false" class="hover:text-rose-400 transition py-1">🌟 Program RT</a>
+            <a href="#kontak" @click="mobileMenuOpen = false" class="hover:text-rose-400 transition py-1">📞 Kontak</a>
+        </div>
+        <div class="pt-4 border-t border-slate-800/80 flex flex-col gap-3">
             @if (Route::has('login'))
                 @auth
-                    <a href="{{ Auth::user()->role == 1 ? route('superadmin.dashboard') : (Auth::user()->role == 2 ? route('ketua.dashboard') : (Auth::user()->role == 3 ? route('bendahara.dashboard') : route('warga.dashboard'))) }}" class="px-5 py-2.5 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-rose-600/25 transition">
+                    <a href="{{ Auth::user()->role == 1 ? route('superadmin.dashboard') : (Auth::user()->role == 2 ? route('ketua.dashboard') : (Auth::user()->role == 3 ? route('bendahara.dashboard') : route('warga.dashboard'))) }}" class="w-full text-center py-3 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg transition">
                         🏛️ Buka Dashboard Saya
                     </a>
                 @else
-                    <a href="{{ route('login') }}" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-2xl transition border border-slate-800">
+                    <a href="{{ route('login') }}" class="w-full text-center py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-2xl transition border border-slate-800">
                         Masuk Warga
                     </a>
                     @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="px-5 py-2.5 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-rose-600/25 transition">
+                        <a href="{{ route('register') }}" class="w-full text-center py-3 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg transition">
                             Daftar Akun
                         </a>
                     @endif
                 @endauth
             @endif
         </div>
-    </nav>
+    </div>
 
     <!-- HERO SECTION WITH INDONESIAN GOTONG ROYONG ARTWORK -->
     <header id="hero" class="relative overflow-hidden py-16 px-6 md:px-12 border-b border-slate-900 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">

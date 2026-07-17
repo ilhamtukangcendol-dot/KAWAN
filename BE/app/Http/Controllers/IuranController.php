@@ -65,8 +65,11 @@ class IuranController extends Controller
     public function pay(Request $request, Iuran $iuran)
     {
         $request->validate([
-            'bukti_bayar' => 'nullable|image|max:2048',
+            'metode_pembayaran' => 'required|string|in:cash,transfer,qris',
+            'bukti_bayar'       => 'nullable|image|max:2048',
         ]);
+
+        $iuran->metode_pembayaran = $request->metode_pembayaran;
 
         $filePath = null;
         if ($request->hasFile('bukti_bayar')) {
@@ -82,16 +85,16 @@ class IuranController extends Controller
 
             // Auto-book into Kas
             Kas::create([
-                'keterangan' => 'Iuran Warga Bulanan (' . $iuran->bulan_nama . ' ' . $iuran->tahun . ') - ' . $iuran->warga->nama_lengkap,
-                'pemasukan' => $iuran->nominal,
+                'keterangan'  => 'Iuran Warga Bulanan (' . $iuran->bulan_nama . ' ' . $iuran->tahun . ') - ' . $iuran->warga->nama_lengkap . ' (' . strtoupper($iuran->metode_pembayaran) . ')',
+                'pemasukan'   => $iuran->nominal,
                 'pengeluaran' => 0,
-                'tanggal' => now()->format('Y-m-d'),
-                'user_id' => auth()->id(),
+                'tanggal'     => now()->format('Y-m-d'),
+                'user_id'     => auth()->id(),
             ]);
         }
         $iuran->save();
 
-        ActivityLog::log('Bayar Iuran', 'Setoran iuran iuran ID #' . $iuran->id);
+        ActivityLog::log('Bayar Iuran', 'Setoran iuran iuran ID #' . $iuran->id . ' lewat ' . strtoupper($iuran->metode_pembayaran));
 
         return redirect()->back()->with('success', 'Pembayaran iuran berhasil diproses.');
     }
@@ -122,4 +125,74 @@ class IuranController extends Controller
         ActivityLog::log('Hapus Iuran', 'Menghapus data iuran ID #' . $iuran->id);
         return redirect()->route('iuran.index')->with('success', 'Data iuran berhasil dihapus.');
     }
+
+    public function storeMass(Request $request)
+    {
+        $validated = $request->validate([
+            'tahun' => 'nullable|integer|min:2020',
+            'nominal' => 'nullable|numeric|min:0',
+            'bulan' => 'nullable|array',
+            'bulan.*' => 'integer|between:1,12',
+        ]);
+
+        $tahun = $validated['tahun'] ?? date('Y');
+        $nominal = $validated['nominal'] ?? \App\Models\Setting::get('nominal_iuran', '50000');
+        $selectedMonths = $validated['bulan'] ?? range(1, 12);
+
+        $wargaList = Warga::all();
+
+        if ($wargaList->isEmpty()) {
+            return back()->with('error', 'Tidak ada data warga untuk ditagih.');
+        }
+
+        $createdCount = 0;
+        $skippedCount = 0;
+
+        foreach ($wargaList as $warga) {
+            foreach ($selectedMonths as $bulan) {
+                $exists = Iuran::where('warga_id', $warga->id)
+                    ->where('bulan', $bulan)
+                    ->where('tahun', $tahun)
+                    ->exists();
+
+                if (!$exists) {
+                    Iuran::create([
+                        'warga_id' => $warga->id,
+                        'bulan' => $bulan,
+                        'tahun' => $tahun,
+                        'nominal' => $nominal,
+                        'status' => 'unpaid',
+                    ]);
+                    $createdCount++;
+                } else {
+                    $skippedCount++;
+                }
+            }
+        }
+
+        $namaBulan = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+
+        $monthsTextList = [];
+        foreach ($selectedMonths as $m) {
+            $monthsTextList[] = $namaBulan[(int)$m];
+        }
+        $monthsString = (count($selectedMonths) === 12) ? 'Januari - Desember' : implode(', ', $monthsTextList);
+
+        ActivityLog::log('Tagihan Massal Iuran', "Membuat tagihan massal untuk tahun {$tahun} (Bulan: {$monthsString}) sebesar Rp " . number_format($nominal, 0, ',', '.') . ". Dibuat: {$createdCount}, Dilewati: {$skippedCount}");
+
+        \App\Models\Pengumuman::create([
+            'user_id' => auth()->id(),
+            'judul' => "Penerbitan Tagihan Iuran Bulanan Tahun {$tahun}",
+            'kategori' => 'penting',
+            'isi' => "Diberitahukan kepada seluruh warga, tagihan iuran bulanan untuk periode tahun {$tahun} pada bulan: {$monthsString} sebesar Rp " . number_format($nominal, 0, ',', '.') . " per bulan telah diterbitkan. Harap segera melakukan pembayaran melalui modul Iuran Warga Bulanan. Terima kasih.",
+            'is_active' => true,
+        ]);
+
+        return redirect()->route('iuran.index')->with('success', "Tagihan massal tahun {$tahun} untuk bulan ({$monthsString}) berhasil dibuat untuk seluruh warga. Jumlah dibuat: {$createdCount} tagihan, sudah ada sebelumnya: {$skippedCount} tagihan. Pengumuman otomatis telah dipublikasikan.");
+    }
 }
+

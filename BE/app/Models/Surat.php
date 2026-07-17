@@ -13,6 +13,7 @@ class Surat extends Model
 
     protected $fillable = [
         'user_id',
+        'warga_id',
         'no_surat',
         'jenis_surat',
         'keperluan',
@@ -26,5 +27,10 @@ class Surat extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function warga()
+    {
+        return $this->belongsTo(Warga::class);
     }
 }

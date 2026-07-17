@@ -16,6 +16,7 @@ class Iuran extends Model
         'bulan',
         'tahun',
         'nominal',
+        'metode_pembayaran',
         'status',
         'bukti_bayar',
         'tanggal_bayar',

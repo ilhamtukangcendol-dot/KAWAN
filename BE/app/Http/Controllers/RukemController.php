@@ -12,9 +12,9 @@ class RukemController extends Controller
 {
     public function index()
     {
-        $rukemList = Rukem::with('warga')->latest('tanggal_wafat')->paginate(15);
-        $wargaList = Warga::orderBy('nama_lengkap', 'asc')->get();
-        $totalSantunanPaid = Rukem::where('status', 'dicairkan')->sum('nominal_santunan');
+        $rukemList          = Rukem::with('warga')->latest('tanggal_wafat')->paginate(15);
+        $wargaList          = Warga::orderBy('nama_lengkap', 'asc')->get();
+        $totalSantunanPaid  = Rukem::where('status', 'dicairkan')->sum('nominal_santunan');
 
         return view('rukem.index', compact('rukemList', 'wargaList', 'totalSantunanPaid'));
     }
@@ -22,33 +22,50 @@ class RukemController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'warga_id' => 'nullable|exists:warga,id',
-            'nama_almarhum' => 'required|string|max:255',
-            'tanggal_wafat' => 'required|date',
-            'ahli_waris' => 'required|string|max:255',
+            'warga_id'         => 'nullable|exists:warga,id',
+            'nama_almarhum'    => 'required|string|max:255',
+            'tanggal_wafat'    => 'required|date',
+            'ahli_waris'       => 'required|string|max:255',
+            'ahli_waris_id'    => 'nullable|exists:warga,id',
             'nominal_santunan' => 'required|numeric|min:0',
-            'keterangan' => 'nullable|string',
+            'keterangan'       => 'nullable|string',
         ]);
+
+        // Auto-fill nama almarhum dari data warga jika dipilih
+        if (!empty($validated['warga_id'])) {
+            $warga = Warga::find($validated['warga_id']);
+            if ($warga) {
+                $validated['nama_almarhum'] = $warga->nama_lengkap;
+            }
+        }
+
+        // Auto-fill ahli waris dari data warga jika dipilih
+        if (!empty($validated['ahli_waris_id'])) {
+            $ahliWarga = Warga::find($validated['ahli_waris_id']);
+            if ($ahliWarga) {
+                $validated['ahli_waris'] = $ahliWarga->nama_lengkap;
+            }
+        }
 
         $status = (auth()->user()->role <= 3) ? 'dicairkan' : 'pending';
 
         $rukem = Rukem::create([
-            'warga_id' => $validated['warga_id'] ?? null,
-            'nama_almarhum' => $validated['nama_almarhum'],
-            'tanggal_wafat' => $validated['tanggal_wafat'],
-            'ahli_waris' => $validated['ahli_waris'],
+            'warga_id'         => $validated['warga_id'] ?? null,
+            'nama_almarhum'    => $validated['nama_almarhum'],
+            'tanggal_wafat'    => $validated['tanggal_wafat'],
+            'ahli_waris'       => $validated['ahli_waris'],
             'nominal_santunan' => $validated['nominal_santunan'],
-            'status' => $status,
-            'keterangan' => $validated['keterangan'] ?? null,
+            'status'           => $status,
+            'keterangan'       => $validated['keterangan'] ?? null,
         ]);
 
         if ($status === 'dicairkan') {
             Kas::create([
-                'keterangan' => 'Pencairan Dana Santunan Duka (Rukem) - Alm/h ' . $rukem->nama_almarhum,
-                'pemasukan' => 0,
+                'keterangan'  => 'Pencairan Dana Santunan Duka (Rukem) - Alm/h ' . $rukem->nama_almarhum,
+                'pemasukan'   => 0,
                 'pengeluaran' => $rukem->nominal_santunan,
-                'tanggal' => now()->format('Y-m-d'),
-                'user_id' => auth()->id(),
+                'tanggal'     => now()->format('Y-m-d'),
+                'user_id'     => auth()->id(),
             ]);
         }
 
@@ -63,11 +80,11 @@ class RukemController extends Controller
         $rukem->save();
 
         Kas::create([
-            'keterangan' => 'Pencairan Dana Santunan Duka (Rukem) - Alm/h ' . $rukem->nama_almarhum,
-            'pemasukan' => 0,
+            'keterangan'  => 'Pencairan Dana Santunan Duka (Rukem) - Alm/h ' . $rukem->nama_almarhum,
+            'pemasukan'   => 0,
             'pengeluaran' => $rukem->nominal_santunan,
-            'tanggal' => now()->format('Y-m-d'),
-            'user_id' => auth()->id(),
+            'tanggal'     => now()->format('Y-m-d'),
+            'user_id'     => auth()->id(),
         ]);
 
         ActivityLog::log('Cairkan Santunan Rukem', 'Pencairan santunan duka ID #' . $rukem->id);

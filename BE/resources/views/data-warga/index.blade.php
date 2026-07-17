@@ -52,21 +52,35 @@
             </div>
 
             <!-- Filter, Search & View Switcher Bar -->
-            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <form method="GET" action="{{ route('data-warga.index') }}" class="flex-grow flex gap-3">
+            <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <form method="GET" action="{{ route('data-warga.index') }}" class="flex-grow flex flex-col sm:flex-row gap-3">
                     <input type="hidden" name="view" value="{{ $viewMode }}">
+                    
                     <div class="relative w-full">
                         <input type="text" name="search" value="{{ $search }}" placeholder="Cari berdasarkan nama warga, NIK, No. KK, atau alamat..." class="w-full border-slate-100 rounded-2xl bg-slate-50 focus:ring-indigo-500 text-xs py-3 px-4 font-semibold text-slate-700">
                     </div>
-                    <button type="submit" class="px-6 py-3 bg-slate-900 hover:bg-black text-white text-xs font-black uppercase tracking-wider rounded-2xl transition">Cari</button>
+
+                    <select name="gender" onchange="this.form.submit()" class="border border-slate-150 rounded-2xl bg-slate-50 focus:ring-indigo-500 text-xs py-3 px-4 font-semibold text-slate-700 shrink-0">
+                        <option value="">Semua Gender</option>
+                        <option value="L" {{ $gender == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                        <option value="P" {{ $gender == 'P' ? 'selected' : '' }}>Perempuan</option>
+                    </select>
+
+                    <select name="sort_umur" onchange="this.form.submit()" class="border border-slate-150 rounded-2xl bg-slate-50 focus:ring-indigo-500 text-xs py-3 px-4 font-semibold text-slate-700 shrink-0">
+                        <option value="">Sortir Umur</option>
+                        <option value="asc" {{ request('sort_umur') == 'asc' ? 'selected' : '' }}>Termuda → Tertua</option>
+                        <option value="desc" {{ request('sort_umur') == 'desc' ? 'selected' : '' }}>Tertua → Termuda</option>
+                    </select>
+
+                    <button type="submit" class="px-6 py-3 bg-slate-900 hover:bg-black text-white text-xs font-black uppercase tracking-wider rounded-2xl transition shrink-0">Cari</button>
                 </form>
 
                 <!-- Toggle Buttons Cards vs Table -->
                 <div class="flex bg-slate-100 p-1.5 rounded-2xl shrink-0">
-                    <a href="{{ route('data-warga.index', ['view' => 'cards', 'search' => $search]) }}" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition {{ $viewMode == 'cards' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900' }}">
+                    <a href="{{ route('data-warga.index', ['view' => 'cards', 'search' => $search, 'gender' => $gender, 'sort_umur' => request('sort_umur')]) }}" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition {{ $viewMode == 'cards' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900' }}">
                         🏡 Kartu Keluarga (KK)
                     </a>
-                    <a href="{{ route('data-warga.index', ['view' => 'table', 'search' => $search]) }}" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition {{ $viewMode == 'table' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900' }}">
+                    <a href="{{ route('data-warga.index', ['view' => 'table', 'search' => $search, 'gender' => $gender, 'sort_umur' => request('sort_umur')]) }}" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition {{ $viewMode == 'table' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900' }}">
                         📋 Tabel Individu
                     </a>
                 </div>
@@ -185,7 +199,41 @@
                                     <th class="py-4 px-6">NIK / No. KK</th>
                                     <th class="py-4 px-6">Nama Lengkap</th>
                                     <th class="py-4 px-6">Status Keluarga</th>
-                                    <th class="py-4 px-6">Gender / Umur</th>
+                                    <th class="py-4 px-6">
+                                        <div class="flex items-center gap-1.5">
+                                            <!-- Sort Gender -->
+                                            <a href="{{ route('data-warga.index', [
+                                                'view' => 'table',
+                                                'search' => $search,
+                                                'gender' => $gender,
+                                                'sort' => 'jenis_kelamin',
+                                                'direction' => request('direction') == 'asc' ? 'desc' : 'asc'
+                                            ]) }}" class="hover:text-indigo-600 transition flex items-center gap-0.5 group">
+                                                Gender
+                                                @if(request('sort') == 'jenis_kelamin')
+                                                    <span class="text-xs">{{ request('direction') == 'asc' ? '▲' : '▼' }}</span>
+                                                @else
+                                                    <span class="text-slate-300 group-hover:text-slate-500 transition text-[9px]">⇅</span>
+                                                @endif
+                                            </a>
+                                            <span class="text-slate-300">/</span>
+                                            <!-- Sort Umur -->
+                                            <a href="{{ route('data-warga.index', [
+                                                'view' => 'table',
+                                                'search' => $search,
+                                                'gender' => $gender,
+                                                'sort' => 'umur',
+                                                'direction' => request('direction') == 'asc' ? 'desc' : 'asc'
+                                            ]) }}" class="hover:text-indigo-600 transition flex items-center gap-0.5 group">
+                                                Umur
+                                                @if(request('sort') == 'umur')
+                                                    <span class="text-xs">{{ request('direction') == 'asc' ? '▲' : '▼' }}</span>
+                                                @else
+                                                    <span class="text-slate-300 group-hover:text-slate-500 transition text-[9px]">⇅</span>
+                                                @endif
+                                            </a>
+                                        </div>
+                                    </th>
                                     <th class="py-4 px-6">Status Tempat Tinggal</th>
                                     <th class="py-4 px-6">Alamat</th>
                                     @if(Auth::user()->role <= 2)

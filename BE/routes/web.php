@@ -24,6 +24,19 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ProfileController;
 
+// API: Pencarian Warga untuk autocomplete layanan warga
+Route::get('/api/warga', function () {
+    $search = request('q');
+    $warga  = \App\Models\Warga::when($search, function ($query) use ($search) {
+        $query->where('nama_lengkap', 'like', "%{$search}%")
+              ->orWhere('nik', 'like', "%{$search}%");
+    })
+    ->orderBy('nama_lengkap')
+    ->limit(30)
+    ->get(['id', 'nama_lengkap', 'nik', 'umur', 'jenis_kelamin', 'alamat', 'status_keluarga']);
+    return response()->json($warga);
+})->middleware('auth');
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes - Smart RT Digital Ecosystem 2026
@@ -108,6 +121,7 @@ Route::middleware(['auth'])->group(function () {
     // --- IURAN WARGA ---
     Route::get('/iuran', [IuranController::class, 'index'])->name('iuran.index');
     Route::post('/iuran', [IuranController::class, 'store'])->middleware('role:1,2,3')->name('iuran.store');
+    Route::post('/iuran/mass', [IuranController::class, 'storeMass'])->middleware('role:1,3')->name('iuran.store_mass');
     Route::post('/iuran/{iuran}/bayar', [IuranController::class, 'pay'])->name('iuran.pay');
     Route::post('/iuran/{iuran}/verify', [IuranController::class, 'verify'])->middleware('role:1,2,3')->name('iuran.verify');
     Route::delete('/iuran/{iuran}', [IuranController::class, 'destroy'])->middleware('role:1,2,3')->name('iuran.destroy');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Surat;
+use App\Models\Warga;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 
@@ -12,26 +13,33 @@ class SuratController extends Controller
     {
         $user = auth()->user();
         if ($user->role <= 2) {
-            $suratList = Surat::with('user')->latest()->paginate(15);
+            $suratList = Surat::with('user', 'warga')->latest()->paginate(15);
         } else {
-            $suratList = Surat::where('user_id', $user->id)->latest()->paginate(15);
+            $suratList = Surat::with('user', 'warga')
+                ->where('user_id', $user->id)
+                ->latest()
+                ->paginate(15);
         }
 
-        return view('surat.index', compact('suratList'));
+        $wargaList = Warga::orderBy('nama_lengkap', 'asc')->get();
+
+        return view('surat.index', compact('suratList', 'wargaList'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'jenis_surat' => 'required|string|max:255',
-            'keperluan' => 'required|string',
+            'warga_id'   => 'nullable|exists:warga,id',
+            'jenis_surat'=> 'required|string|max:255',
+            'keperluan'  => 'required|string',
         ]);
 
         $surat = Surat::create([
-            'user_id' => auth()->id(),
-            'jenis_surat' => $validated['jenis_surat'],
-            'keperluan' => $validated['keperluan'],
-            'status' => 'pending',
+            'user_id'           => auth()->id(),
+            'warga_id'          => $validated['warga_id'] ?? null,
+            'jenis_surat'       => $validated['jenis_surat'],
+            'keperluan'         => $validated['keperluan'],
+            'status'            => 'pending',
             'tanggal_pengajuan' => now()->format('Y-m-d'),
         ]);
 
@@ -43,14 +51,14 @@ class SuratController extends Controller
     public function approve(Request $request, Surat $surat)
     {
         $request->validate([
-            'no_surat' => 'required|string|max:100',
+            'no_surat'   => 'required|string|max:100',
             'catatan_rt' => 'nullable|string',
         ]);
 
         $surat->update([
-            'no_surat' => $request->no_surat,
-            'catatan_rt' => $request->catatan_rt,
-            'status' => 'approved',
+            'no_surat'          => $request->no_surat,
+            'catatan_rt'        => $request->catatan_rt,
+            'status'            => 'approved',
             'tanggal_disetujui' => now()->format('Y-m-d'),
         ]);
 
@@ -65,7 +73,7 @@ class SuratController extends Controller
 
         $surat->update([
             'catatan_rt' => $request->catatan_rt,
-            'status' => 'rejected',
+            'status'     => 'rejected',
         ]);
 
         ActivityLog::log('Penolakan Surat RT', 'Menolak permohonan surat ID #' . $surat->id);

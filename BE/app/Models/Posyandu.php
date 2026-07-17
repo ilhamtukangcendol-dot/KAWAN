@@ -12,7 +12,10 @@ class Posyandu extends Model
     protected $table = 'posyandu';
 
     protected $fillable = [
+        'warga_id',
+        'pendaftar_warga_id',
         'nama_pasien',
+        'nama_pendaftar',
         'kategori',
         'umur_bulan_atau_tahun',
         'bb_kg',
@@ -21,4 +24,14 @@ class Posyandu extends Model
         'tanggal_periksa',
         'petugas',
     ];
+
+    public function warga()
+    {
+        return $this->belongsTo(Warga::class);
+    }
+
+    public function pendaftarWarga()
+    {
+        return $this->belongsTo(Warga::class, 'pendaftar_warga_id');
+    }
 }
