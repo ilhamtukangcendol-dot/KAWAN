@@ -94,19 +94,47 @@
 
         <!-- Quick Demo Login Shortcuts -->
         <div class="pt-4 border-t border-slate-800/80 mt-6">
-            <span class="block font-black text-[9px] uppercase tracking-widest text-slate-500 mb-3 text-center">Masuk Cepat Akun Demo (Uji Coba)</span>
-            <div class="grid grid-cols-2 gap-2">
-                <button type="button" onclick="fillLogin('warga@gmail.com', 'password')" class="px-3 py-2 bg-slate-950/40 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-[10px] font-bold text-slate-300 rounded-xl transition flex items-center justify-center gap-1.5">
-                    <span>🟢</span> Warga
-                </button>
-                <button type="button" onclick="fillLogin('ketua@gmail.com', 'password')" class="px-3 py-2 bg-slate-950/40 hover:bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-[10px] font-bold text-slate-300 rounded-xl transition flex items-center justify-center gap-1.5">
-                    <span>👑</span> Ketua RT
-                </button>
-                <button type="button" onclick="fillLogin('bendahara@gmail.com', 'password')" class="px-3 py-2 bg-slate-950/40 hover:bg-slate-900 border border-slate-800 hover:border-amber-500/40 text-[10px] font-bold text-slate-300 rounded-xl transition flex items-center justify-center gap-1.5">
-                    <span>💰</span> Bendahara
-                </button>
-                <button type="button" onclick="fillLogin('superadmin@gmail.com', 'password')" class="px-3 py-2 bg-slate-950/40 hover:bg-slate-900 border border-slate-800 hover:border-indigo-500/40 text-[10px] font-bold text-slate-300 rounded-xl transition flex items-center justify-center gap-1.5">
+            <span class="block font-black text-[9px] uppercase tracking-widest text-slate-400 mb-2 text-center">Masuk Cepat Akun Demo (Uji Coba)</span>
+            
+            <!-- Tingkat RW -->
+            <div class="mb-2">
+                <span class="block text-[8px] font-black uppercase tracking-widest text-indigo-400 mb-1 px-1">Tingkat Rukun Warga (RW)</span>
+                <div class="grid grid-cols-3 gap-1.5">
+                    <button type="button" onclick="fillLogin('rw@gmail.com', 'password')" class="px-2 py-2 bg-slate-950/50 hover:bg-indigo-950/40 border border-slate-800 hover:border-indigo-500/60 text-[10px] font-bold text-indigo-200 rounded-xl transition flex items-center justify-center gap-1">
+                        <span>🏛️</span> Ketua RW
+                    </button>
+                    <button type="button" onclick="fillLogin('sekretaris_rw@gmail.com', 'password')" class="px-2 py-2 bg-slate-950/50 hover:bg-indigo-950/40 border border-slate-800 hover:border-indigo-500/60 text-[10px] font-bold text-indigo-200 rounded-xl transition flex items-center justify-center gap-1">
+                        <span>📋</span> Sekr. RW
+                    </button>
+                    <button type="button" onclick="fillLogin('bendahara_rw@gmail.com', 'password')" class="px-2 py-2 bg-slate-950/50 hover:bg-indigo-950/40 border border-slate-800 hover:border-indigo-500/60 text-[10px] font-bold text-indigo-200 rounded-xl transition flex items-center justify-center gap-1">
+                        <span>💳</span> Bend. RW
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tingkat RT -->
+            <div class="mb-2">
+                <span class="block text-[8px] font-black uppercase tracking-widest text-rose-400 mb-1 px-1">Tingkat Rukun Tetangga (RT)</span>
+                <div class="grid grid-cols-3 gap-1.5">
+                    <button type="button" onclick="fillLogin('ketua@gmail.com', 'password')" class="px-2 py-2 bg-slate-950/50 hover:bg-rose-950/40 border border-slate-800 hover:border-rose-500/60 text-[10px] font-bold text-rose-200 rounded-xl transition flex items-center justify-center gap-1">
+                        <span>👑</span> Ketua RT
+                    </button>
+                    <button type="button" onclick="fillLogin('sekretaris_rt@gmail.com', 'password')" class="px-2 py-2 bg-slate-950/50 hover:bg-rose-950/40 border border-slate-800 hover:border-rose-500/60 text-[10px] font-bold text-rose-200 rounded-xl transition flex items-center justify-center gap-1">
+                        <span>📝</span> Sekr. RT
+                    </button>
+                    <button type="button" onclick="fillLogin('bendahara@gmail.com', 'password')" class="px-2 py-2 bg-slate-950/50 hover:bg-amber-950/40 border border-slate-800 hover:border-amber-500/60 text-[10px] font-bold text-amber-200 rounded-xl transition flex items-center justify-center gap-1">
+                        <span>💰</span> Bend. RT
+                    </button>
+                </div>
+            </div>
+
+            <!-- Utama / Publik -->
+            <div class="grid grid-cols-2 gap-1.5 pt-1">
+                <button type="button" onclick="fillLogin('superadmin@gmail.com', 'password')" class="px-3 py-2 bg-slate-950/50 hover:bg-purple-950/40 border border-slate-800 hover:border-purple-500/60 text-[10px] font-bold text-purple-200 rounded-xl transition flex items-center justify-center gap-1.5">
                     <span>⚡</span> Superadmin
+                </button>
+                <button type="button" onclick="fillLogin('warga@gmail.com', 'password')" class="px-3 py-2 bg-slate-950/50 hover:bg-emerald-950/40 border border-slate-800 hover:border-emerald-500/60 text-[10px] font-bold text-emerald-200 rounded-xl transition flex items-center justify-center gap-1.5">
+                    <span>🟢</span> Warga RT
                 </button>
             </div>
         </div>

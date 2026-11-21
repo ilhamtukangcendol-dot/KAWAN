@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Models\User;
 
 class RoleMiddleware
 {
@@ -20,7 +21,7 @@ class RoleMiddleware
         $user = auth()->user();
 
         // Superadmin (Role 1) has full access to all protected routes
-        if ((int) $user->role === \App\Models\User::ROLE_SUPERADMIN || in_array('superadmin', $roles) || in_array('1', $roles) || in_array(1, $roles)) {
+        if ((int) $user->role === User::ROLE_SUPERADMIN || in_array('superadmin', $roles) || in_array('1', $roles) || in_array(1, $roles)) {
             return $next($request);
         }
 
@@ -28,14 +29,58 @@ class RoleMiddleware
         foreach ($roles as $role) {
             if (is_numeric($role)) {
                 $allowedNumericRoles[] = (int) $role;
-            } elseif ($role === 'superadmin') {
-                $allowedNumericRoles[] = \App\Models\User::ROLE_SUPERADMIN;
-            } elseif ($role === 'rt') {
-                $allowedNumericRoles[] = \App\Models\User::ROLE_RT;
-            } elseif ($role === 'bendahara') {
-                $allowedNumericRoles[] = \App\Models\User::ROLE_BENDAHARA;
-            } elseif ($role === 'warga') {
-                $allowedNumericRoles[] = \App\Models\User::ROLE_WARGA;
+            } else {
+                switch (strtolower(trim($role))) {
+                    case 'superadmin':
+                    case 'admin':
+                        $allowedNumericRoles[] = User::ROLE_SUPERADMIN;
+                        break;
+                    case 'rw':
+                    case 'ketua_rw':
+                        $allowedNumericRoles[] = User::ROLE_RW;
+                        break;
+                    case 'sekretaris_rw':
+                        $allowedNumericRoles[] = User::ROLE_SEKRETARIS_RW;
+                        break;
+                    case 'bendahara_rw':
+                        $allowedNumericRoles[] = User::ROLE_BENDAHARA_RW;
+                        break;
+                    case 'rt':
+                    case 'ketua_rt':
+                        $allowedNumericRoles[] = User::ROLE_RT;
+                        break;
+                    case 'sekretaris_rt':
+                    case 'sekretaris':
+                        $allowedNumericRoles[] = User::ROLE_SEKRETARIS_RT;
+                        break;
+                    case 'bendahara_rt':
+                    case 'bendahara':
+                        $allowedNumericRoles[] = User::ROLE_BENDAHARA_RT;
+                        break;
+                    case 'warga':
+                        $allowedNumericRoles[] = User::ROLE_WARGA;
+                        break;
+                    case 'pengurus':
+                        $allowedNumericRoles = array_merge($allowedNumericRoles, [
+                            User::ROLE_SUPERADMIN,
+                            User::ROLE_RW,
+                            User::ROLE_SEKRETARIS_RW,
+                            User::ROLE_BENDAHARA_RW,
+                            User::ROLE_RT,
+                            User::ROLE_SEKRETARIS_RT,
+                            User::ROLE_BENDAHARA_RT,
+                        ]);
+                        break;
+                    case 'keuangan':
+                        $allowedNumericRoles = array_merge($allowedNumericRoles, [
+                            User::ROLE_SUPERADMIN,
+                            User::ROLE_RW,
+                            User::ROLE_RT,
+                            User::ROLE_BENDAHARA_RT,
+                            User::ROLE_BENDAHARA_RW,
+                        ]);
+                        break;
+                }
             }
         }
 

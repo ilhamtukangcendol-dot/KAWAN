@@ -28,15 +28,15 @@
                         <a href="{{ route('superadmin.dashboard') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('superadmin.dashboard') ? 'bg-purple-600 text-white shadow-lg' : 'text-slate-300 hover:bg-slate-800' }}">
                             <span>📊 Dashboard Admin</span>
                         </a>
-                    @elseif(Auth::user()->role == 2)
+                    @elseif(in_array(Auth::user()->role, [2, 5, 6, 8]))
                         <a href="{{ route('ketua.dashboard') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('ketua.dashboard') ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-300 hover:bg-slate-800' }}">
-                            <span>🏛️ Dashboard Ketua RT</span>
+                            <span>🏛️ Dashboard {{ Auth::user()->role_label }}</span>
                         </a>
-                    @elseif(Auth::user()->role == 3)
+                    @elseif(in_array(Auth::user()->role, [3, 7]))
                         <a href="{{ route('bendahara.dashboard') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('bendahara.dashboard') ? 'bg-amber-600 text-white shadow-lg' : 'text-slate-300 hover:bg-slate-800' }}">
-                            <span>💼 Dashboard Bendahara</span>
+                            <span>💼 Dashboard {{ Auth::user()->role_label }}</span>
                         </a>
-                    @elseif(Auth::user()->role == 4)
+                    @else
                         <a href="{{ route('warga.dashboard') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('warga.dashboard') ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-300 hover:bg-slate-800' }}">
                             <span>🏡 Dashboard Warga</span>
                         </a>
@@ -60,7 +60,7 @@
             <div>
                 <p class="px-3 text-[9px] font-black text-amber-400 uppercase tracking-[0.25em] mb-2">Keuangan & Kas RT</p>
                 <div class="space-y-1 text-xs">
-                    @if(Auth::user()->role <= 3)
+                    @if(Auth::user()->role != 4)
                         <a href="{{ route('kas.index') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('kas.*') ? 'bg-amber-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
                             <span>💰 Buku Kas Utama</span>
                         </a>
@@ -76,7 +76,7 @@
                         <span>💳 {{ Auth::user()->role == 4 ? 'Bayar Iuran Bulanan' : 'Iuran Warga Bulanan' }}</span>
                     </a>
 
-                    @if(Auth::user()->role <= 3)
+                    @if(Auth::user()->role != 4)
                         <a href="{{ route('asset.index') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('asset.*') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
                             <span>📦 Asset & Inventaris RT</span>
                         </a>
@@ -91,7 +91,7 @@
                     <a href="{{ route('data-warga.index') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('data-warga.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
                         <span>👥 Database Warga RT</span>
                     </a>
-                    @if(Auth::user()->role <= 2)
+                    @if(in_array(Auth::user()->role, [1, 2, 5]))
                         <a href="{{ route('superadmin.database.index') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('superadmin.database.*') ? 'bg-purple-600 text-white shadow-lg' : 'text-amber-300 hover:bg-slate-800' }}">
                             <span>🗄️ Pusat Kendali Migrasi & DB</span>
                         </a>
@@ -156,7 +156,7 @@
                     <a href="{{ route('settings.index') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('settings.*') ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-300 hover:bg-slate-800' }}">
                         <span>⚙️ Pengaturan Akun & Sistem</span>
                     </a>
-                    @if(Auth::user()->role == 1)
+                    @if(in_array(Auth::user()->role, [1, 2, 5]))
                         <a href="{{ route('superadmin.database.index') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('superadmin.database.*') ? 'bg-purple-600 text-white shadow-lg' : 'text-slate-300 hover:bg-slate-800' }}">
                             <span>🗄️ Pusat Kendali Migrasi & DB</span>
                         </a>

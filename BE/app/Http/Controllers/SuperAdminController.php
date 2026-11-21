@@ -17,8 +17,12 @@ class SuperAdminController extends Controller
     {
         $totalUsers = User::count();
         $totalSuperadmin = User::where('role', User::ROLE_SUPERADMIN)->count();
+        $totalRw = User::where('role', User::ROLE_RW)->count();
+        $totalSekretarisRw = User::where('role', User::ROLE_SEKRETARIS_RW)->count();
+        $totalBendaharaRw = User::where('role', User::ROLE_BENDAHARA_RW)->count();
         $totalRt = User::where('role', User::ROLE_RT)->count();
-        $totalBendahara = User::where('role', User::ROLE_BENDAHARA)->count();
+        $totalSekretarisRt = User::where('role', User::ROLE_SEKRETARIS_RT)->count();
+        $totalBendahara = User::where('role', User::ROLE_BENDAHARA_RT)->count();
         $totalWarga = User::where('role', User::ROLE_WARGA)->count();
 
         $recentUsers = User::latest()->take(5)->get();
@@ -27,7 +31,11 @@ class SuperAdminController extends Controller
         return view('superadmin.dashboard', compact(
             'totalUsers',
             'totalSuperadmin',
+            'totalRw',
+            'totalSekretarisRw',
+            'totalBendaharaRw',
             'totalRt',
+            'totalSekretarisRt',
             'totalBendahara',
             'totalWarga',
             'recentUsers',
@@ -76,7 +84,16 @@ class SuperAdminController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'integer', Rule::in([User::ROLE_SUPERADMIN, User::ROLE_RT, User::ROLE_BENDAHARA, User::ROLE_WARGA])],
+            'role' => ['required', 'integer', Rule::in([
+                User::ROLE_SUPERADMIN,
+                User::ROLE_RW,
+                User::ROLE_SEKRETARIS_RW,
+                User::ROLE_BENDAHARA_RW,
+                User::ROLE_RT,
+                User::ROLE_SEKRETARIS_RT,
+                User::ROLE_BENDAHARA_RT,
+                User::ROLE_WARGA,
+            ])],
         ]);
 
         User::create([
@@ -105,7 +122,16 @@ class SuperAdminController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'role' => ['required', 'integer', Rule::in([User::ROLE_SUPERADMIN, User::ROLE_RT, User::ROLE_BENDAHARA, User::ROLE_WARGA])],
+            'role' => ['required', 'integer', Rule::in([
+                User::ROLE_SUPERADMIN,
+                User::ROLE_RW,
+                User::ROLE_SEKRETARIS_RW,
+                User::ROLE_BENDAHARA_RW,
+                User::ROLE_RT,
+                User::ROLE_SEKRETARIS_RT,
+                User::ROLE_BENDAHARA_RT,
+                User::ROLE_WARGA,
+            ])],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
         ]);
 

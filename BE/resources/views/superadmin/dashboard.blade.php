@@ -40,25 +40,25 @@
                     <div class="bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/15">
                         <span class="text-[10px] uppercase font-bold text-purple-200 block">Super Admin</span>
                         <p class="text-2xl font-black text-white mt-1">{{ $totalSuperadmin }} Akun</p>
-                        <span class="text-[10px] text-purple-300 font-semibold">Full System Bypass</span>
+                        <span class="text-[10px] text-purple-300 font-semibold">Full System Controller</span>
                     </div>
 
                     <div class="bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/15">
-                        <span class="text-[10px] uppercase font-bold text-purple-200 block">Ketua RT</span>
-                        <p class="text-2xl font-black text-white mt-1">{{ $totalRt }} Akun</p>
-                        <span class="text-[10px] text-purple-300 font-semibold">Otoritas RT</span>
+                        <span class="text-[10px] uppercase font-bold text-indigo-200 block">Aparatur RW</span>
+                        <p class="text-2xl font-black text-indigo-300 mt-1">{{ $totalRw + $totalSekretarisRw + $totalBendaharaRw }} Akun</p>
+                        <span class="text-[10px] text-indigo-200 font-semibold">{{ $totalRw }} RW • {{ $totalSekretarisRw }} Sekr • {{ $totalBendaharaRw }} Bend</span>
                     </div>
 
                     <div class="bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/15">
-                        <span class="text-[10px] uppercase font-bold text-purple-200 block">Bendahara</span>
-                        <p class="text-2xl font-black text-white mt-1">{{ $totalBendahara }} Akun</p>
-                        <span class="text-[10px] text-purple-300 font-semibold">Operator Keuangan</span>
+                        <span class="text-[10px] uppercase font-bold text-amber-200 block">Aparatur RT</span>
+                        <p class="text-2xl font-black text-amber-300 mt-1">{{ $totalRt + $totalSekretarisRt + $totalBendahara }} Akun</p>
+                        <span class="text-[10px] text-amber-200 font-semibold">{{ $totalRt }} RT • {{ $totalSekretarisRt }} Sekr • {{ $totalBendahara }} Bend</span>
                     </div>
 
                     <div class="bg-white/10 backdrop-blur-sm p-4 rounded-2xl border border-white/15">
-                        <span class="text-[10px] uppercase font-bold text-purple-200 block">Warga RT</span>
+                        <span class="text-[10px] uppercase font-bold text-emerald-200 block">Warga RT</span>
                         <p class="text-2xl font-black text-emerald-300 mt-1">{{ $totalWarga }} Akun</p>
-                        <span class="text-[10px] text-emerald-400 font-semibold">Pengguna Publik</span>
+                        <span class="text-[10px] text-emerald-400 font-semibold">Pengguna Publik Terdaftar</span>
                     </div>
                 </div>
             </div>

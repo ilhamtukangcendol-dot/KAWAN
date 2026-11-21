@@ -89,9 +89,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         $user = auth()->user();
         if ($user) {
-            if ((int)$user->role === 1) return redirect()->route('superadmin.dashboard');
-            if ((int)$user->role === 2) return redirect()->route('ketua.dashboard');
-            if ((int)$user->role === 3) return redirect()->route('bendahara.dashboard');
+            $role = (int) $user->role;
+            if ($role === \App\Models\User::ROLE_SUPERADMIN) return redirect()->route('superadmin.dashboard');
+            if (in_array($role, [\App\Models\User::ROLE_RT, \App\Models\User::ROLE_RW, \App\Models\User::ROLE_SEKRETARIS_RT, \App\Models\User::ROLE_SEKRETARIS_RW])) {
+                return redirect()->route('ketua.dashboard');
+            }
+            if (in_array($role, [\App\Models\User::ROLE_BENDAHARA_RT, \App\Models\User::ROLE_BENDAHARA_RW])) {
+                return redirect()->route('bendahara.dashboard');
+            }
             return redirect()->route('warga.dashboard');
         }
         return redirect()->route('login');
@@ -99,8 +104,8 @@ Route::middleware(['auth'])->group(function () {
 
     // --- DASHBOARD SYSTEM PER ROLE ---
     Route::get('/superadmin/dashboard', [SuperAdminController::class, 'dashboard'])->middleware('role:1')->name('superadmin.dashboard');
-    Route::get('/ketua/dashboard', [KetuaController::class, 'index'])->middleware('role:1,2')->name('ketua.dashboard');
-    Route::get('/bendahara/dashboard', [BendaharaController::class, 'index'])->middleware('role:1,3')->name('bendahara.dashboard');
+    Route::get('/ketua/dashboard', [KetuaController::class, 'index'])->middleware('role:1,2,5,6,8')->name('ketua.dashboard');
+    Route::get('/bendahara/dashboard', [BendaharaController::class, 'index'])->middleware('role:1,3,7')->name('bendahara.dashboard');
     Route::get('/warga/dashboard', [WargaController::class, 'index'])->name('warga.dashboard');
 
     // --- MANAJEMEN USER & AUDIT LOG (HANYA SUPERADMIN - ROLE 1) ---
@@ -116,8 +121,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/activity-logs/clear', [ActivityLogController::class, 'clear'])->name('activity-logs.clear');
     });
 
-    // --- PUSAT KENDALI MIGRASI & DATABASE KAWAN (SUPERADMIN & KETUA RT - ROLE 1, 2) ---
-    Route::middleware(['role:1,2'])->group(function () {
+    // --- PUSAT KENDALI MIGRASI & DATABASE KAWAN (SUPERADMIN & PIMPINAN RT/RW) ---
+    Route::middleware(['role:1,2,5'])->group(function () {
         Route::get('/superadmin/database', [DatabaseMigrationController::class, 'index'])->name('superadmin.database.index');
         Route::post('/superadmin/database/migrate', [DatabaseMigrationController::class, 'runMigrate'])->name('superadmin.database.migrate');
         Route::post('/superadmin/database/seed', [DatabaseMigrationController::class, 'runSeed'])->name('superadmin.database.seed');
@@ -125,8 +130,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/superadmin/database/optimize', [DatabaseMigrationController::class, 'runOptimize'])->name('superadmin.database.optimize');
     });
 
-    // --- KAS, PEMASUKAN, PENGELUARAN, ASSET (HANYA SUPERADMIN, RT, BENDAHARA - ROLE 1, 2, 3) ---
-    Route::middleware(['role:1,2,3'])->group(function () {
+    // --- KAS, PEMASUKAN, PENGELUARAN, ASSET (PENGURUS RT & RW) ---
+    Route::middleware(['role:1,2,3,5,6,7,8'])->group(function () {
         Route::get('/kas', [KasController::class, 'index'])->name('kas.index');
         Route::get('/pemasukan', [KasController::class, 'pemasukan'])->name('pemasukan.index');
         Route::get('/pengeluaran', [KasController::class, 'pengeluaran'])->name('pengeluaran.index');
@@ -142,35 +147,35 @@ Route::middleware(['auth'])->group(function () {
 
     // --- IURAN WARGA ---
     Route::get('/iuran', [IuranController::class, 'index'])->name('iuran.index');
-    Route::post('/iuran', [IuranController::class, 'store'])->middleware('role:1,2,3')->name('iuran.store');
-    Route::post('/iuran/mass', [IuranController::class, 'storeMass'])->middleware('role:1,3')->name('iuran.store_mass');
+    Route::post('/iuran', [IuranController::class, 'store'])->middleware('role:1,2,3,5,6,7,8')->name('iuran.store');
+    Route::post('/iuran/mass', [IuranController::class, 'storeMass'])->middleware('role:1,3,7')->name('iuran.store_mass');
     Route::post('/iuran/{iuran}/bayar', [IuranController::class, 'pay'])->name('iuran.pay');
-    Route::post('/iuran/{iuran}/verify', [IuranController::class, 'verify'])->middleware('role:1,2,3')->name('iuran.verify');
-    Route::delete('/iuran/{iuran}', [IuranController::class, 'destroy'])->middleware('role:1,2,3')->name('iuran.destroy');
+    Route::post('/iuran/{iuran}/verify', [IuranController::class, 'verify'])->middleware('role:1,2,3,5,6,7,8')->name('iuran.verify');
+    Route::delete('/iuran/{iuran}', [IuranController::class, 'destroy'])->middleware('role:1,2,3,5,6,7,8')->name('iuran.destroy');
 
-    // --- DATA WARGA & PENGURUS RT ---
+    // --- DATA WARGA & PENGURUS RT / RW ---
     Route::get('/data-warga', [DataWargaController::class, 'index'])->name('data-warga.index');
-    Route::post('/data-warga', [DataWargaController::class, 'store'])->middleware('role:1,2')->name('data-warga.store');
-    Route::put('/data-warga/{dataWarga}', [DataWargaController::class, 'update'])->middleware('role:1,2')->name('data-warga.update');
-    Route::delete('/data-warga/{dataWarga}', [DataWargaController::class, 'destroy'])->middleware('role:1,2')->name('data-warga.destroy');
+    Route::post('/data-warga', [DataWargaController::class, 'store'])->middleware('role:1,2,5,6,8')->name('data-warga.store');
+    Route::put('/data-warga/{dataWarga}', [DataWargaController::class, 'update'])->middleware('role:1,2,5,6,8')->name('data-warga.update');
+    Route::delete('/data-warga/{dataWarga}', [DataWargaController::class, 'destroy'])->middleware('role:1,2,5,6,8')->name('data-warga.destroy');
     Route::get('/warga', [DataWargaController::class, 'index'])->name('warga.index');
 
     Route::get('/pengurus', [PengurusController::class, 'index'])->name('pengurus.index');
-    Route::post('/pengurus', [PengurusController::class, 'store'])->middleware('role:1,2')->name('pengurus.store');
-    Route::put('/pengurus/{penguru}', [PengurusController::class, 'update'])->middleware('role:1,2')->name('pengurus.update');
-    Route::delete('/pengurus/{penguru}', [PengurusController::class, 'destroy'])->middleware('role:1,2')->name('pengurus.destroy');
+    Route::post('/pengurus', [PengurusController::class, 'store'])->middleware('role:1,2,5,6,8')->name('pengurus.store');
+    Route::put('/pengurus/{penguru}', [PengurusController::class, 'update'])->middleware('role:1,2,5,6,8')->name('pengurus.update');
+    Route::delete('/pengurus/{penguru}', [PengurusController::class, 'destroy'])->middleware('role:1,2,5,6,8')->name('pengurus.destroy');
 
     // --- KOPERASI RT ---
     Route::get('/koperasi', [KoperasiController::class, 'index'])->name('koperasi.index');
-    Route::post('/koperasi/produk', [KoperasiController::class, 'storeProduct'])->middleware('role:1,3')->name('koperasi.produk.store');
+    Route::post('/koperasi/produk', [KoperasiController::class, 'storeProduct'])->middleware('role:1,3,7')->name('koperasi.produk.store');
     Route::post('/koperasi/transaksi', [KoperasiController::class, 'storeTransaksi'])->name('koperasi.transaksi.store');
-    Route::post('/koperasi/transaksi/{transaksi}/status', [KoperasiController::class, 'updateStatus'])->middleware('role:1,3')->name('koperasi.transaksi.status');
-    Route::delete('/koperasi/produk/{koperasi}', [KoperasiController::class, 'destroy'])->middleware('role:1,3')->name('koperasi.produk.destroy');
+    Route::post('/koperasi/transaksi/{transaksi}/status', [KoperasiController::class, 'updateStatus'])->middleware('role:1,3,7')->name('koperasi.transaksi.status');
+    Route::delete('/koperasi/produk/{koperasi}', [KoperasiController::class, 'destroy'])->middleware('role:1,3,7')->name('koperasi.produk.destroy');
 
     // --- BANK SAMPAH ---
     Route::get('/bank-sampah', [BankSampahController::class, 'index'])->name('bank-sampah.index');
-    Route::post('/bank-sampah', [BankSampahController::class, 'store'])->middleware('role:1,3')->name('bank-sampah.store');
-    Route::delete('/bank-sampah/{bankSampah}', [BankSampahController::class, 'destroy'])->middleware('role:1,3')->name('bank-sampah.destroy');
+    Route::post('/bank-sampah', [BankSampahController::class, 'store'])->middleware('role:1,3,7')->name('bank-sampah.store');
+    Route::delete('/bank-sampah/{bankSampah}', [BankSampahController::class, 'destroy'])->middleware('role:1,3,7')->name('bank-sampah.destroy');
 
     // --- UMKM WARGA ---
     Route::get('/umkm', [UmkmController::class, 'index'])->name('umkm.index');
@@ -181,62 +186,62 @@ Route::middleware(['auth'])->group(function () {
     // --- SURAT MENYURAT ---
     Route::get('/surat', [SuratController::class, 'index'])->name('surat.index');
     Route::post('/surat', [SuratController::class, 'store'])->name('surat.store');
-    Route::post('/surat/{surat}/approve', [SuratController::class, 'approve'])->middleware('role:1,2')->name('surat.approve');
-    Route::post('/surat/{surat}/reject', [SuratController::class, 'reject'])->middleware('role:1,2')->name('surat.reject');
-    Route::delete('/surat/{surat}', [SuratController::class, 'destroy'])->middleware('role:1,2')->name('surat.destroy');
+    Route::post('/surat/{surat}/approve', [SuratController::class, 'approve'])->middleware('role:1,2,5,6,8')->name('surat.approve');
+    Route::post('/surat/{surat}/reject', [SuratController::class, 'reject'])->middleware('role:1,2,5,6,8')->name('surat.reject');
+    Route::delete('/surat/{surat}', [SuratController::class, 'destroy'])->middleware('role:1,2,5,6,8')->name('surat.destroy');
 
     // --- POSYANDU ---
     Route::get('/posyandu', [PosyanduController::class, 'index'])->name('posyandu.index');
-    Route::post('/posyandu', [PosyanduController::class, 'store'])->middleware('role:1,2,3')->name('posyandu.store');
-    Route::delete('/posyandu/{posyandu}', [PosyanduController::class, 'destroy'])->middleware('role:1,2,3')->name('posyandu.destroy');
+    Route::post('/posyandu', [PosyanduController::class, 'store'])->middleware('role:1,2,3,5,6,7,8')->name('posyandu.store');
+    Route::delete('/posyandu/{posyandu}', [PosyanduController::class, 'destroy'])->middleware('role:1,2,3,5,6,7,8')->name('posyandu.destroy');
 
     // --- RONDA & KEAMANAN ---
     Route::get('/ronda', [RondaController::class, 'index'])->name('ronda.index');
-    Route::post('/ronda', [RondaController::class, 'store'])->middleware('role:1,2')->name('ronda.store');
+    Route::post('/ronda', [RondaController::class, 'store'])->middleware('role:1,2,5,6,8')->name('ronda.store');
     Route::put('/ronda/{ronda}/laporan', [RondaController::class, 'updateLaporan'])->name('ronda.laporan.update');
-    Route::delete('/ronda/{ronda}', [RondaController::class, 'destroy'])->middleware('role:1,2')->name('ronda.destroy');
+    Route::delete('/ronda/{ronda}', [RondaController::class, 'destroy'])->middleware('role:1,2,5,6,8')->name('ronda.destroy');
 
     // --- KEGIATAN WARGA ---
     Route::get('/kegiatan', [KegiatanController::class, 'index'])->name('kegiatan.index');
-    Route::post('/kegiatan', [KegiatanController::class, 'store'])->middleware('role:1,2')->name('kegiatan.store');
-    Route::put('/kegiatan/{kegiatan}', [KegiatanController::class, 'update'])->middleware('role:1,2')->name('kegiatan.update');
-    Route::delete('/kegiatan/{kegiatan}', [KegiatanController::class, 'destroy'])->middleware('role:1,2')->name('kegiatan.destroy');
+    Route::post('/kegiatan', [KegiatanController::class, 'store'])->middleware('role:1,2,5,6,8')->name('kegiatan.store');
+    Route::put('/kegiatan/{kegiatan}', [KegiatanController::class, 'update'])->middleware('role:1,2,5,6,8')->name('kegiatan.update');
+    Route::delete('/kegiatan/{kegiatan}', [KegiatanController::class, 'destroy'])->middleware('role:1,2,5,6,8')->name('kegiatan.destroy');
 
-    // --- RUKEM ---
+    // --- SANTUNAN KEMATIAN / RUKEM ---
     Route::get('/rukem', [RukemController::class, 'index'])->name('rukem.index');
     Route::post('/rukem', [RukemController::class, 'store'])->name('rukem.store');
-    Route::post('/rukem/{rukem}/cairkan', [RukemController::class, 'cairkan'])->middleware('role:1,2,3')->name('rukem.cairkan');
-    Route::delete('/rukem/{rukem}', [RukemController::class, 'destroy'])->middleware('role:1,2,3')->name('rukem.destroy');
+    Route::post('/rukem/{rukem}/cairkan', [RukemController::class, 'cairkan'])->middleware('role:1,2,3,5,7')->name('rukem.cairkan');
+    Route::delete('/rukem/{rukem}', [RukemController::class, 'destroy'])->middleware('role:1,2,3,5,7')->name('rukem.destroy');
 
     // --- ASPIRASI ---
     Route::get('/aspirasi', [AspirasiController::class, 'index'])->name('aspirasi.index');
     Route::post('/aspirasi', [AspirasiController::class, 'store'])->name('aspirasi.store');
-    Route::post('/aspirasi/{aspirasi}/respond', [AspirasiController::class, 'respond'])->middleware('role:1,2')->name('aspirasi.respond');
+    Route::post('/aspirasi/{aspirasi}/respond', [AspirasiController::class, 'respond'])->middleware('role:1,2,5,6,8')->name('aspirasi.respond');
     Route::delete('/aspirasi/{aspirasi}', [AspirasiController::class, 'destroy'])->name('aspirasi.destroy');
 
     // --- PENGUMUMAN ---
     Route::get('/pengumuman', [PengumumanController::class, 'index'])->name('pengumuman.index');
-    Route::post('/pengumuman', [PengumumanController::class, 'store'])->middleware('role:1,2')->name('pengumuman.store');
-    Route::put('/pengumuman/{pengumuman}', [PengumumanController::class, 'update'])->middleware('role:1,2')->name('pengumuman.update');
-    Route::delete('/pengumuman/{pengumuman}', [PengumumanController::class, 'destroy'])->middleware('role:1,2')->name('pengumuman.destroy');
+    Route::post('/pengumuman', [PengumumanController::class, 'store'])->middleware('role:1,2,5,6,8')->name('pengumuman.store');
+    Route::put('/pengumuman/{pengumuman}', [PengumumanController::class, 'update'])->middleware('role:1,2,5,6,8')->name('pengumuman.update');
+    Route::delete('/pengumuman/{pengumuman}', [PengumumanController::class, 'destroy'])->middleware('role:1,2,5,6,8')->name('pengumuman.destroy');
 
     // --- PENGATURAN (UNIVESAL UNTUK SEMUA ROLE) ---
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 
     // --- LEGACY COMPATIBILITY ALIASES ---
-    Route::get('/ketua/monitoring', [KasController::class, 'index'])->middleware('role:1,2')->name('ketua.monitoring');
-    Route::get('/ketua/audit', [KasController::class, 'index'])->middleware('role:1,2')->name('ketua.audit');
-    Route::get('/ketua/warga', [DataWargaController::class, 'index'])->middleware('role:1,2')->name('ketua.warga');
-    Route::get('/ketua/laporan', [KasController::class, 'index'])->middleware('role:1,2')->name('ketua.laporan');
-    Route::get('/ketua/iuran', [IuranController::class, 'index'])->middleware('role:1,2')->name('ketua.iuran');
-    Route::get('/ketua/payment', [IuranController::class, 'index'])->middleware('role:1,2')->name('ketua.payment');
+    Route::get('/ketua/monitoring', [KasController::class, 'index'])->middleware('role:1,2,5,6,8')->name('ketua.monitoring');
+    Route::get('/ketua/audit', [KasController::class, 'index'])->middleware('role:1,2,5,6,8')->name('ketua.audit');
+    Route::get('/ketua/warga', [DataWargaController::class, 'index'])->middleware('role:1,2,5,6,8')->name('ketua.warga');
+    Route::get('/ketua/laporan', [KasController::class, 'index'])->middleware('role:1,2,5,6,8')->name('ketua.laporan');
+    Route::get('/ketua/iuran', [IuranController::class, 'index'])->middleware('role:1,2,5,6,8')->name('ketua.iuran');
+    Route::get('/ketua/payment', [IuranController::class, 'index'])->middleware('role:1,2,5,6,8')->name('ketua.payment');
     
-    Route::get('/bendahara/entri', [KasController::class, 'index'])->middleware('role:1,3')->name('bendahara.entri');
-    Route::get('/bendahara/iuran', [IuranController::class, 'index'])->middleware('role:1,3')->name('bendahara.iuran');
-    Route::get('/bendahara/laporan', [KasController::class, 'index'])->middleware('role:1,3')->name('bendahara.laporan');
-    Route::get('/bendahara/inventaris', [AssetController::class, 'index'])->middleware('role:1,3')->name('bendahara.inventaris');
-    Route::get('/bendahara/persetujuan', [IuranController::class, 'index'])->middleware('role:1,3')->name('bendahara.persetujuan');
+    Route::get('/bendahara/entri', [KasController::class, 'index'])->middleware('role:1,3,7')->name('bendahara.entri');
+    Route::get('/bendahara/iuran', [IuranController::class, 'index'])->middleware('role:1,3,7')->name('bendahara.iuran');
+    Route::get('/bendahara/laporan', [KasController::class, 'index'])->middleware('role:1,3,7')->name('bendahara.laporan');
+    Route::get('/bendahara/inventaris', [AssetController::class, 'index'])->middleware('role:1,3,7')->name('bendahara.inventaris');
+    Route::get('/bendahara/persetujuan', [IuranController::class, 'index'])->middleware('role:1,3,7')->name('bendahara.persetujuan');
 
     Route::get('/warga/bayar', [IuranController::class, 'index'])->name('warga.payment');
     Route::get('/warga/metode-pembayaran', [SettingController::class, 'index'])->name('warga.payment_methods');

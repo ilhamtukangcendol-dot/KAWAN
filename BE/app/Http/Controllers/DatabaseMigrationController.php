@@ -279,11 +279,15 @@ class DatabaseMigrationController extends Controller
             ];
         };
 
-        // 1. Akun Pengguna Inti (Super Admin, Ketua, Bendahara, Warga)
-        $checkModel('users', '4 Akun Pengguna Bawaan', 'Super Administrator, Ketua RT, Bendahara, dan Warga', 4, function() {
+        // 1. Akun Pengguna Inti (Superadmin, RW, Sekr RW, Bend RW, RT, Sekr RT, Bend RT, Warga)
+        $checkModel('users', '8 Akun Pengguna Bawaan', 'Super Administrator, Pengurus RW, Pengurus RT, dan Warga', 4, function() {
             return User::whereIn('email', [
                 'superadmin@gmail.com',
+                'rw@gmail.com',
+                'sekretaris_rw@gmail.com',
+                'bendahara_rw@gmail.com',
                 'ketua@gmail.com',
+                'sekretaris_rt@gmail.com',
                 'bendahara@gmail.com',
                 'warga@gmail.com',
             ])->count();

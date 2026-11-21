@@ -41,11 +41,15 @@
                     <div>
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Filter Role</label>
                         <select name="role" class="w-full border-slate-100 rounded-2xl bg-slate-50 text-xs py-3 px-4 font-semibold text-slate-700 focus:ring-purple-500">
-                            <option value="">Semua Role (4 Role)</option>
-                            <option value="1" {{ request('role') == '1' ? 'selected' : '' }}>Super Admin (Role 1)</option>
-                            <option value="2" {{ request('role') == '2' ? 'selected' : '' }}>Ketua RT (Role 2)</option>
-                            <option value="3" {{ request('role') == '3' ? 'selected' : '' }}>Bendahara (Role 3)</option>
-                            <option value="4" {{ request('role') == '4' ? 'selected' : '' }}>Warga (Role 4)</option>
+                            <option value="">Semua Role (8 Role Sistem)</option>
+                            <option value="1" {{ request('role') == '1' ? 'selected' : '' }}>1 - Super Admin</option>
+                            <option value="5" {{ request('role') == '5' ? 'selected' : '' }}>5 - Ketua RW</option>
+                            <option value="6" {{ request('role') == '6' ? 'selected' : '' }}>6 - Sekretaris RW</option>
+                            <option value="7" {{ request('role') == '7' ? 'selected' : '' }}>7 - Bendahara RW</option>
+                            <option value="2" {{ request('role') == '2' ? 'selected' : '' }}>2 - Ketua RT</option>
+                            <option value="8" {{ request('role') == '8' ? 'selected' : '' }}>8 - Sekretaris RT</option>
+                            <option value="3" {{ request('role') == '3' ? 'selected' : '' }}>3 - Bendahara RT</option>
+                            <option value="4" {{ request('role') == '4' ? 'selected' : '' }}>4 - Warga</option>
                         </select>
                     </div>
                     <div class="flex items-end gap-2">
@@ -96,10 +100,18 @@
                                     <td class="py-4 px-6 text-center">
                                         @if($user->role == 1)
                                             <span class="px-3 py-1 bg-purple-100 text-purple-800 text-[10px] font-black rounded-xl uppercase tracking-wider inline-block">1 - Super Admin</span>
+                                        @elseif($user->role == 5)
+                                            <span class="px-3 py-1 bg-indigo-100 text-indigo-800 text-[10px] font-black rounded-xl uppercase tracking-wider inline-block">5 - Ketua RW</span>
+                                        @elseif($user->role == 6)
+                                            <span class="px-3 py-1 bg-cyan-100 text-cyan-800 text-[10px] font-black rounded-xl uppercase tracking-wider inline-block">6 - Sekr. RW</span>
+                                        @elseif($user->role == 7)
+                                            <span class="px-3 py-1 bg-teal-100 text-teal-800 text-[10px] font-black rounded-xl uppercase tracking-wider inline-block">7 - Bend. RW</span>
                                         @elseif($user->role == 2)
                                             <span class="px-3 py-1 bg-blue-100 text-blue-800 text-[10px] font-black rounded-xl uppercase tracking-wider inline-block">2 - Ketua RT</span>
+                                        @elseif($user->role == 8)
+                                            <span class="px-3 py-1 bg-violet-100 text-violet-800 text-[10px] font-black rounded-xl uppercase tracking-wider inline-block">8 - Sekr. RT</span>
                                         @elseif($user->role == 3)
-                                            <span class="px-3 py-1 bg-amber-100 text-amber-800 text-[10px] font-black rounded-xl uppercase tracking-wider inline-block">3 - Bendahara</span>
+                                            <span class="px-3 py-1 bg-amber-100 text-amber-800 text-[10px] font-black rounded-xl uppercase tracking-wider inline-block">3 - Bend. RT</span>
                                         @else
                                             <span class="px-3 py-1 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-xl uppercase tracking-wider inline-block">4 - Warga</span>
                                         @endif

@@ -39,10 +39,22 @@
                         <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Hak Akses / Role SIKAS RT</label>
                         <select name="role" required class="w-full border-slate-100 rounded-2xl bg-slate-50 focus:ring-purple-500 text-sm py-3.5 px-4 font-semibold text-slate-700">
                             <option value="">-- Pilih Role --</option>
-                            <option value="1" {{ old('role') == '1' ? 'selected' : '' }}>1 - Super Admin (Full Control / Kelola Pengguna & Seluruh Fitur)</option>
-                            <option value="2" {{ old('role') == '2' ? 'selected' : '' }}>2 - Ketua RT (Monitoring, Audit, Laporan & Payment Warga)</option>
-                            <option value="3" {{ old('role') == '3' ? 'selected' : '' }}>3 - Bendahara (Persetujuan Kas, Entri Kas, Iuran & Inventaris)</option>
-                            <option value="4" {{ old('role') == '4' ? 'selected' : '' }}>4 - Warga (Setoran Kas Mandiri, Riwayat & Metode Pembayaran)</option>
+                            <optgroup label="Tingkat Eksekutif / Sistem">
+                                <option value="1" {{ old('role') == '1' ? 'selected' : '' }}>1 - Super Admin (Full Control / Pengguna & Seluruh Sistem)</option>
+                            </optgroup>
+                            <optgroup label="Tingkat Rukun Warga (RW)">
+                                <option value="5" {{ old('role') == '5' ? 'selected' : '' }}>5 - Ketua RW (Pimpinan RW / Monitoring Wilayah)</option>
+                                <option value="6" {{ old('role') == '6' ? 'selected' : '' }}>6 - Sekretaris RW (Administrasi & Pelayanan RW)</option>
+                                <option value="7" {{ old('role') == '7' ? 'selected' : '' }}>7 - Bendahara RW (Keuangan & Kas Tingkat RW)</option>
+                            </optgroup>
+                            <optgroup label="Tingkat Rukun Tetangga (RT)">
+                                <option value="2" {{ old('role') == '2' ? 'selected' : '' }}>2 - Ketua RT (Pimpinan RT / Monitoring & Audit)</option>
+                                <option value="8" {{ old('role') == '8' ? 'selected' : '' }}>8 - Sekretaris RT (Administrasi & Persuratan RT)</option>
+                                <option value="3" {{ old('role') == '3' ? 'selected' : '' }}>3 - Bendahara RT (Kas, Iuran & Inventaris RT)</option>
+                            </optgroup>
+                            <optgroup label="Warga Masyarakat">
+                                <option value="4" {{ old('role') == '4' ? 'selected' : '' }}>4 - Warga (Layanan Warga, Iuran Mandiri & Komunitas)</option>
+                            </optgroup>
                         </select>
                         @error('role')
                             <p class="text-rose-500 text-xs font-bold mt-1">{{ $message }}</p>

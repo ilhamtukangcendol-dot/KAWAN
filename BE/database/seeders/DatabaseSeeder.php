@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Seed 4 Core Role Users
+        // 1. Seed 8 Core Role Users (Aparatur RW, RT, Superadmin & Warga)
         $superadmin = User::create([
             'name' => 'Super Administrator',
             'email' => 'superadmin@gmail.com',
@@ -36,18 +36,46 @@ class DatabaseSeeder extends Seeder
             'role' => User::ROLE_SUPERADMIN, // 1
         ]);
 
+        $rw = User::create([
+            'name' => 'Bapak Ketua RW 05',
+            'email' => 'rw@gmail.com',
+            'password' => Hash::make('password'),
+            'role' => User::ROLE_RW, // 5
+        ]);
+
+        $sekretarisRw = User::create([
+            'name' => 'Ibu Sekretaris RW 05',
+            'email' => 'sekretaris_rw@gmail.com',
+            'password' => Hash::make('password'),
+            'role' => User::ROLE_SEKRETARIS_RW, // 6
+        ]);
+
+        $bendaharaRw = User::create([
+            'name' => 'Ibu Bendahara RW 05',
+            'email' => 'bendahara_rw@gmail.com',
+            'password' => Hash::make('password'),
+            'role' => User::ROLE_BENDAHARA_RW, // 7
+        ]);
+
         $ketua = User::create([
-            'name' => 'Pak Ketua RT',
+            'name' => 'Pak Ketua RT 01',
             'email' => 'ketua@gmail.com',
             'password' => Hash::make('password'),
             'role' => User::ROLE_RT, // 2
         ]);
 
+        $sekretarisRt = User::create([
+            'name' => 'Bapak Sekretaris RT 01',
+            'email' => 'sekretaris_rt@gmail.com',
+            'password' => Hash::make('password'),
+            'role' => User::ROLE_SEKRETARIS_RT, // 8
+        ]);
+
         $bendahara = User::create([
-            'name' => 'Ibu Bendahara',
+            'name' => 'Ibu Bendahara RT 01',
             'email' => 'bendahara@gmail.com',
             'password' => Hash::make('password'),
-            'role' => User::ROLE_BENDAHARA, // 3
+            'role' => User::ROLE_BENDAHARA_RT, // 3
         ]);
 
         $wargaUser = User::create([
