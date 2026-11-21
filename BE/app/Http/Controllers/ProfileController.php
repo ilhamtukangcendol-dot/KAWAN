@@ -37,6 +37,10 @@ class ProfileController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
 
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
         if ($request->hasFile('avatar')) {
             // Delete old avatar if exists
             if ($user->avatar && file_exists(public_path($user->avatar))) {

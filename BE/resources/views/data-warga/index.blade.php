@@ -8,9 +8,14 @@
                 <p class="text-xs font-bold text-slate-400 mt-1">Direktori kependudukan terkelompok berdasarkan Kepala Keluarga</p>
             </div>
             @if(Auth::user()->role <= 2)
-                <button onclick="openModalTambah('')" class="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-lg hover:scale-105 transition">
-                    + Tambah Anggota / KK Baru
-                </button>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('superadmin.database.index') }}" class="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-lg hover:scale-105 transition flex items-center gap-1.5">
+                        <span>🗄️ Pusat Kendali Migrasi & DB</span>
+                    </a>
+                    <button onclick="openModalTambah('')" class="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-lg hover:scale-105 transition">
+                        + Tambah Anggota / KK Baru
+                    </button>
+                </div>
             @endif
         </div>
     </x-slot>

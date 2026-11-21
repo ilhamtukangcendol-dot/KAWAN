@@ -23,6 +23,7 @@ use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DatabaseMigrationController;
 
 // API: Pencarian Warga untuk autocomplete layanan warga
 Route::get('/api/warga', function () {
@@ -84,6 +85,18 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
 
+    // --- DASHBOARD UNIVERSAL REDIRECT ---
+    Route::get('/dashboard', function () {
+        $user = auth()->user();
+        if ($user) {
+            if ((int)$user->role === 1) return redirect()->route('superadmin.dashboard');
+            if ((int)$user->role === 2) return redirect()->route('ketua.dashboard');
+            if ((int)$user->role === 3) return redirect()->route('bendahara.dashboard');
+            return redirect()->route('warga.dashboard');
+        }
+        return redirect()->route('login');
+    })->name('dashboard');
+
     // --- DASHBOARD SYSTEM PER ROLE ---
     Route::get('/superadmin/dashboard', [SuperAdminController::class, 'dashboard'])->middleware('role:1')->name('superadmin.dashboard');
     Route::get('/ketua/dashboard', [KetuaController::class, 'index'])->middleware('role:1,2')->name('ketua.dashboard');
@@ -101,6 +114,15 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
         Route::post('/activity-logs/clear', [ActivityLogController::class, 'clear'])->name('activity-logs.clear');
+    });
+
+    // --- PUSAT KENDALI MIGRASI & DATABASE KAWAN (SUPERADMIN & KETUA RT - ROLE 1, 2) ---
+    Route::middleware(['role:1,2'])->group(function () {
+        Route::get('/superadmin/database', [DatabaseMigrationController::class, 'index'])->name('superadmin.database.index');
+        Route::post('/superadmin/database/migrate', [DatabaseMigrationController::class, 'runMigrate'])->name('superadmin.database.migrate');
+        Route::post('/superadmin/database/seed', [DatabaseMigrationController::class, 'runSeed'])->name('superadmin.database.seed');
+        Route::post('/superadmin/database/fresh', [DatabaseMigrationController::class, 'runFresh'])->name('superadmin.database.fresh');
+        Route::post('/superadmin/database/optimize', [DatabaseMigrationController::class, 'runOptimize'])->name('superadmin.database.optimize');
     });
 
     // --- KAS, PEMASUKAN, PENGELUARAN, ASSET (HANYA SUPERADMIN, RT, BENDAHARA - ROLE 1, 2, 3) ---
@@ -222,7 +244,8 @@ Route::middleware(['auth'])->group(function () {
 
     // --- PROFILE ---
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::match(['post', 'patch'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/profile/avatar/delete', [ProfileController::class, 'deleteAvatar'])->name('profile.avatar.delete');
 });
 

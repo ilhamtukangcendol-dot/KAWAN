@@ -66,7 +66,12 @@
             <!-- Master Shortcuts Grid -->
             <div>
                 <h3 class="text-lg font-black text-slate-800 tracking-tight mb-4 uppercase">Direct Shortcut Modul Ekosistem</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                    <a href="{{ route('superadmin.database.index') }}" class="p-5 bg-white hover:bg-purple-50/50 border border-slate-100 rounded-3xl shadow-lg text-center group transition">
+                        <div class="w-12 h-12 bg-purple-100 text-purple-700 rounded-2xl mx-auto flex items-center justify-center text-xl font-bold mb-3 group-hover:scale-110 transition-transform">🗄️</div>
+                        <span class="font-black text-xs text-slate-800 group-hover:text-purple-700 block uppercase">Pusat Kendali Migrasi & DB</span>
+                    </a>
+
                     <a href="{{ route('superadmin.users.index') }}" class="p-5 bg-white hover:bg-purple-50/50 border border-slate-100 rounded-3xl shadow-lg text-center group transition">
                         <div class="w-12 h-12 bg-purple-100 text-purple-700 rounded-2xl mx-auto flex items-center justify-center text-xl font-bold mb-3 group-hover:scale-110 transition-transform">👥</div>
                         <span class="font-black text-xs text-slate-800 group-hover:text-purple-700 block uppercase">Manajemen User</span>

@@ -135,6 +135,29 @@
                     </button>
                 </div>
             </form>
+
+            @if(Auth::user()->role == 1)
+                <!-- SECTION 3: PUSAT KENDALI MIGRASI & DATABASE KAWAN -->
+                <div class="bg-gradient-to-r from-slate-900 to-indigo-950 rounded-3xl p-8 border border-indigo-900 shadow-xl text-white flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-0.5 bg-purple-500/30 text-purple-200 border border-purple-400/30 rounded-md text-[10px] font-black uppercase tracking-wider">
+                                Database & Seeder Control
+                            </span>
+                        </div>
+                        <h3 class="font-black text-xl text-white uppercase tracking-tight mt-1 flex items-center gap-2">
+                            <span>🗄️ Pusat Kendali Migrasi & Database KAWAN</span>
+                        </h3>
+                        <p class="text-xs text-slate-300 font-semibold max-w-xl">
+                            Pantau total tabel yang telah termigrasi, riwayat eksekusi batch Laravel, dan cek status notifikasi apakah seluruh data seeder 100 warga & modul bawaan sudah terisi atau belum.
+                        </p>
+                    </div>
+
+                    <a href="{{ route('superadmin.database.index') }}" class="px-6 py-3.5 bg-purple-600 hover:bg-purple-500 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-purple-600/30 transition flex items-center justify-center gap-2 shrink-0">
+                        <span>Buka Pusat Kendali &rarr;</span>
+                    </a>
+                </div>
+            @endif
         </div>
     </div>
 
