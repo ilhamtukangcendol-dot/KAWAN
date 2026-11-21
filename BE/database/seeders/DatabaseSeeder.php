@@ -29,58 +29,50 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // 1. Seed 8 Core Role Users (Aparatur RW, RT, Superadmin & Warga)
-        $superadmin = User::create([
+        $superadmin = User::firstOrCreate(['email' => 'superadmin@gmail.com'], [
             'name' => 'Super Administrator',
-            'email' => 'superadmin@gmail.com',
             'password' => Hash::make('password'),
             'role' => User::ROLE_SUPERADMIN, // 1
         ]);
 
-        $rw = User::create([
+        $rw = User::firstOrCreate(['email' => 'rw@gmail.com'], [
             'name' => 'Bapak Ketua RW 05',
-            'email' => 'rw@gmail.com',
             'password' => Hash::make('password'),
             'role' => User::ROLE_RW, // 5
         ]);
 
-        $sekretarisRw = User::create([
+        $sekretarisRw = User::firstOrCreate(['email' => 'sekretaris_rw@gmail.com'], [
             'name' => 'Ibu Sekretaris RW 05',
-            'email' => 'sekretaris_rw@gmail.com',
             'password' => Hash::make('password'),
             'role' => User::ROLE_SEKRETARIS_RW, // 6
         ]);
 
-        $bendaharaRw = User::create([
+        $bendaharaRw = User::firstOrCreate(['email' => 'bendahara_rw@gmail.com'], [
             'name' => 'Ibu Bendahara RW 05',
-            'email' => 'bendahara_rw@gmail.com',
             'password' => Hash::make('password'),
             'role' => User::ROLE_BENDAHARA_RW, // 7
         ]);
 
-        $ketua = User::create([
+        $ketua = User::firstOrCreate(['email' => 'ketua@gmail.com'], [
             'name' => 'Pak Ketua RT 01',
-            'email' => 'ketua@gmail.com',
             'password' => Hash::make('password'),
             'role' => User::ROLE_RT, // 2
         ]);
 
-        $sekretarisRt = User::create([
+        $sekretarisRt = User::firstOrCreate(['email' => 'sekretaris_rt@gmail.com'], [
             'name' => 'Bapak Sekretaris RT 01',
-            'email' => 'sekretaris_rt@gmail.com',
             'password' => Hash::make('password'),
             'role' => User::ROLE_SEKRETARIS_RT, // 8
         ]);
 
-        $bendahara = User::create([
+        $bendahara = User::firstOrCreate(['email' => 'bendahara@gmail.com'], [
             'name' => 'Ibu Bendahara RT 01',
-            'email' => 'bendahara@gmail.com',
             'password' => Hash::make('password'),
             'role' => User::ROLE_BENDAHARA_RT, // 3
         ]);
 
-        $wargaUser = User::create([
+        $wargaUser = User::firstOrCreate(['email' => 'warga@gmail.com'], [
             'name' => 'Bapak Warga',
-            'email' => 'warga@gmail.com',
             'password' => Hash::make('password'),
             'role' => User::ROLE_WARGA, // 4
         ]);
