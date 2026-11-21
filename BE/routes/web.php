@@ -24,6 +24,7 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DatabaseMigrationController;
+use App\Http\Controllers\IotPortalController;
 
 // API: Pencarian Warga untuk autocomplete layanan warga
 Route::get('/api/warga', function () {
@@ -200,6 +201,17 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/ronda', [RondaController::class, 'store'])->middleware('role:1,2,5,6,8')->name('ronda.store');
     Route::put('/ronda/{ronda}/laporan', [RondaController::class, 'updateLaporan'])->name('ronda.laporan.update');
     Route::delete('/ronda/{ronda}', [RondaController::class, 'destroy'])->middleware('role:1,2,5,6,8')->name('ronda.destroy');
+
+    // --- PORTAL GERBANG & IOT RFID ---
+    Route::get('/portal', [IotPortalController::class, 'index'])->name('portal.index');
+    Route::post('/portal/open-manual', [IotPortalController::class, 'openManual'])->name('portal.open-manual');
+    Route::post('/portal/pairing/start', [IotPortalController::class, 'startPairing'])->name('portal.pairing.start');
+    Route::get('/portal/pairing/check/{token}', [IotPortalController::class, 'checkPairing'])->name('portal.pairing.check');
+    Route::post('/portal/register-rfid', [IotPortalController::class, 'registerKtp'])->name('portal.register-rfid');
+    Route::post('/portal/toggle-access/{user}', [IotPortalController::class, 'toggleAccess'])->middleware('role:1,2,5,6,8')->name('portal.toggle-access');
+    Route::delete('/portal/remove-rfid/{user}', [IotPortalController::class, 'removeKtp'])->name('portal.remove-rfid');
+    Route::get('/portal/logs', [IotPortalController::class, 'logs'])->name('portal.logs');
+    Route::get('/portal/firmware', [IotPortalController::class, 'firmware'])->name('portal.firmware');
 
     // --- KEGIATAN WARGA ---
     Route::get('/kegiatan', [KegiatanController::class, 'index'])->name('kegiatan.index');

@@ -138,6 +138,9 @@
                     <a href="{{ route('ronda.index') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('ronda.*') ? 'bg-rose-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
                         <span>🛡️ Keamanan & Ronda</span>
                     </a>
+                    <a href="{{ route('portal.index') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('portal.*') ? 'bg-cyan-600 text-white shadow-lg' : 'text-slate-300 hover:bg-slate-800' }}">
+                        <span>🚪 Portal Gerbang & IoT RFID</span>
+                    </a>
                     <a href="{{ route('kegiatan.index') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('kegiatan.*') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
                         <span>📅 Agenda Kegiatan RT</span>
                     </a>

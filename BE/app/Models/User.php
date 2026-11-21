@@ -35,6 +35,9 @@ class User extends Authenticatable
         'password',
         'avatar',
         'role',
+        'rfid_uid',
+        'rfid_registered_at',
+        'portal_access_enabled',
     ];
 
     /**
@@ -162,5 +165,21 @@ class User extends Authenticatable
     public function warga()
     {
         return $this->hasOne(Warga::class);
+    }
+
+    /**
+     * Riwayat akses portal RFID/NFC
+     */
+    public function portalLogs()
+    {
+        return $this->hasMany(IotPortalLog::class);
+    }
+
+    /**
+     * Helper cek apakah sudah mendaftarkan kartu KTP
+     */
+    public function hasRegisteredKtp(): bool
+    {
+        return !empty($this->rfid_uid);
     }
 }

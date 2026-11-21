@@ -43,6 +43,46 @@
                 </div>
             </div>
 
+            <!-- Akses Portal Gerbang & e-KTP RFID Warga -->
+            <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-indigo-500/30 rounded-3xl p-6 shadow-xl text-white flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-cyan-600/20 border-2 border-cyan-500/40 flex items-center justify-center text-3xl shrink-0">
+                        🚪
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                                IoT Gate Control
+                            </span>
+                            @if(Auth::user()->hasRegisteredKtp())
+                                <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                    ✓ e-KTP Terdaftar
+                                </span>
+                            @else
+                                <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                    ! Belum Ada e-KTP
+                                </span>
+                            @endif
+                        </div>
+                        <h3 class="text-base font-black">Akses Palang Pintu Gerbang Perumahan</h3>
+                        @if(Auth::user()->hasRegisteredKtp())
+                            <p class="text-xs text-slate-300 mt-0.5">
+                                e-KTP Anda aktif dengan UID: <span class="font-mono font-bold text-cyan-300">{{ Auth::user()->rfid_uid }}</span>. Tempelkan KTP pada pembaca gerbang untuk masuk.
+                            </p>
+                        @else
+                            <p class="text-xs text-amber-200 mt-0.5">
+                                Daftarkan e-KTP Anda sekarang agar palang gerbang perumahan dapat terbuka secara otomatis saat Anda tap KTP.
+                            </p>
+                        @endif
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0 w-full md:w-auto">
+                    <a href="{{ route('portal.index') }}" class="w-full md:w-auto px-5 py-3 bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition text-center">
+                        {{ Auth::user()->hasRegisteredKtp() ? 'Kelola Kartu & Buka Gerbang' : 'Daftarkan e-KTP Saya' }} &rarr;
+                    </a>
+                </div>
+            </div>
+
             <!-- Stats Grid Warga -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <!-- Stat 1: Kas RT Transparan -->
