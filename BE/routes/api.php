@@ -4,12 +4,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\DatabaseMigrationController;
+use App\Http\Controllers\DeployWebhookController;
 
 // Public API routes
 Route::post('/login', [ApiController::class, 'login']);
 Route::post('/register', [ApiController::class, 'register']);
 Route::get('/public-data', [ApiController::class, 'getPublicData']);
 Route::get('/database/status', [DatabaseMigrationController::class, 'apiStatus']);
+Route::match(['get', 'post'], '/deploy-webhook', [DeployWebhookController::class, 'deploy']);
 
 // Authenticated API routes
 Route::middleware('auth:sanctum')->group(function () {

@@ -1,0 +1,8 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/$(whoami)/public_html/
+    - /bin/cp -R * $DEPLOYPATH 2>/dev/null || true
+    - /bin/cp -R BE/* $DEPLOYPATH 2>/dev/null || true
+    - /bin/cp -R BE/.env $DEPLOYPATH/.env 2>/dev/null || true
+    - /bin/rm -f $DEPLOYPATH/storage/framework/views/*.php 2>/dev/null || true
