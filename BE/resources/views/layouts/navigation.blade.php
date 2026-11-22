@@ -91,11 +91,6 @@
                     <a href="{{ route('data-warga.index') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('data-warga.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
                         <span>👥 Database Warga RT</span>
                     </a>
-                    @if(in_array(Auth::user()->role, [1, 2, 5]))
-                        <a href="{{ route('superadmin.database.index') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('superadmin.database.*') ? 'bg-purple-600 text-white shadow-lg' : 'text-amber-300 hover:bg-slate-800' }}">
-                            <span>🗄️ Pusat Kendali Migrasi & DB</span>
-                        </a>
-                    @endif
                     <a href="{{ route('pengurus.index') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('pengurus.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-slate-800' }}">
                         <span>👔 Struktur Pengurus RT</span>
                     </a>
@@ -159,11 +154,6 @@
                     <a href="{{ route('settings.index') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('settings.*') ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-300 hover:bg-slate-800' }}">
                         <span>⚙️ Pengaturan Akun & Sistem</span>
                     </a>
-                    @if(in_array(Auth::user()->role, [1, 2, 5]))
-                        <a href="{{ route('superadmin.database.index') }}" class="flex items-center px-4 py-2.5 rounded-xl font-bold transition {{ request()->routeIs('superadmin.database.*') ? 'bg-purple-600 text-white shadow-lg' : 'text-slate-300 hover:bg-slate-800' }}">
-                            <span>🗄️ Pusat Kendali Migrasi & DB</span>
-                        </a>
-                    @endif
                 </div>
             </div>
 
