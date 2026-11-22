@@ -10,9 +10,11 @@ Mendukung 2 Jenis Board:
 ---
 
 ## 📦 Library Arduino yang Diperlukan
+Hanya **1 Library** saja!
 Buka **Arduino IDE** -> **Sketch** -> **Include Library** -> **Manage Libraries...**, lalu install:
-1. **MFRC522** (oleh GithubCommunity / Miguel Balboa)
-2. **ArduinoJson** (oleh Benoit Blanchon - versi 6 atau 7)
+- **MFRC522** (oleh GithubCommunity / Miguel Balboa)
+
+*(Library ArduinoJson tidak diperlukan lagi karena sketch sudah menggunakan format JSON internal bawaan C++)*
 
 ---
 
@@ -74,14 +76,8 @@ Di baris 53 file `.ino`:
 
 ---
 
-## 📶 Konfigurasi WiFi & API Server
+## 📶 Konfigurasi WiFi Hotspot (Sudah Disesuaikan)
 ```cpp
-const char* WIFI_SSID     = "NAMA_WIFI_KAMU";
-const char* WIFI_PASSWORD = "PASSWORD_WIFI";
-
-// Server API KAWAN
-const char* API_URL_SCAN = "https://kawan.unique-monsters.my.id/api/iot/portal/scan";
-const char* API_URL_PING = "https://kawan.unique-monsters.my.id/api/iot/portal/ping";
-const char* DEVICE_ID    = "PORTAL-GATE-01";
-const char* DEVICE_KEY   = "kawan_esp32_secret_2026";
+const char* WIFI_SSID     = "Poco F6505";
+const char* WIFI_PASSWORD = "dimas12345";
 ```

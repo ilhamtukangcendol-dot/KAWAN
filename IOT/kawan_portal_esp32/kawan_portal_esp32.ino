@@ -53,7 +53,6 @@
 #include <HTTPClient.h>
 #include <SPI.h>
 #include <MFRC522.h>
-#include <ArduinoJson.h>
 
 // ==================================================================================
 // PILIH TIPE BOARD ESP32:
@@ -79,9 +78,9 @@
   #define LED_RED    12    // GPIO 12
 #endif
 
-// ----------------- KONFIGURASI WI-FI -----------------
-const char* WIFI_SSID     = "NAMA_WIFI_PERUMAHAN";
-const char* WIFI_PASSWORD = "PASSWORD_WIFI";
+// ----------------- KONFIGURASI WI-FI HOTSPOT -----------------
+const char* WIFI_SSID     = "Poco F6505";
+const char* WIFI_PASSWORD = "dimas12345";
 
 // ----------------- KONFIGURASI SERVER KAWAN -----------------
 const char* API_URL_SCAN = "https://kawan.unique-monsters.my.id/api/iot/portal/scan";
@@ -182,14 +181,8 @@ void verifyAccessWithServer(String uid) {
   http.begin(API_URL_SCAN);
   http.addHeader("Content-Type", "application/json");
 
-  // Siapkan Payload JSON
-  StaticJsonDocument<256> doc;
-  doc["device_id"]  = DEVICE_ID;
-  doc["rfid_uid"]   = uid;
-  doc["device_key"] = DEVICE_KEY;
-
-  String jsonPayload;
-  serializeJson(doc, jsonPayload);
+  // Siapkan Payload JSON string langsung (tanpa perlu library eksternal)
+  String jsonPayload = "{\"device_id\":\"" + String(DEVICE_ID) + "\",\"rfid_uid\":\"" + uid + "\",\"device_key\":\"" + String(DEVICE_KEY) + "\"}";
 
   Serial.println("📡 Mengirim verifikasi ke server KAWAN...");
   int httpCode = http.POST(jsonPayload);
@@ -201,32 +194,20 @@ void verifyAccessWithServer(String uid) {
     Serial.println("):");
     Serial.println(response);
 
-    StaticJsonDocument<512> resDoc;
-    DeserializationError err = deserializeJson(resDoc, response);
-
-    if (!err) {
-      const char* status = resDoc["status"];
-      bool access = resDoc["access"] | false;
-      const char* msg = resDoc["message"];
-
-      // 1. KONDISI AKSES DITERIMA: BUKA GERBANG!
-      if (access == true || strcmp(status, "granted") == 0) {
-        Serial.println("🟢 [AKSES DITERIMA] Selamat Datang! Palang Gerbang Terbuka.");
-        openGateBarrier(5000); // Buka selama 5 detik
-      }
-      // 2. KONDISI MODE PAIRING KTP BERHASIL
-      else if (strcmp(status, "pairing_success") == 0) {
-        Serial.println("✨ [PAIRING SUKSES] KTP Berhasil Didaftarkan!");
-        beepSuccessPairing();
-      }
-      // 3. KONDISI AKSES DITOLAK (KTP BELUM TERDAFTAR)
-      else {
-        Serial.println("🚫 [AKSES DITOLAK] e-KTP belum terdaftar di aplikasi KAWAN!");
-        beepAccessDenied();
-      }
-    } else {
-      Serial.println("JSON Parsing Error!");
-      beepError();
+    // 1. KONDISI AKSES DITERIMA: BUKA GERBANG!
+    if (response.indexOf("\"access\":true") >= 0 || response.indexOf("\"status\":\"granted\"") >= 0 || response.indexOf("granted") >= 0) {
+      Serial.println("🟢 [AKSES DITERIMA] Selamat Datang! Palang Gerbang Terbuka.");
+      openGateBarrier(5000); // Buka selama 5 detik
+    }
+    // 2. KONDISI MODE PAIRING KTP BERHASIL
+    else if (response.indexOf("pairing_success") >= 0) {
+      Serial.println("✨ [PAIRING SUKSES] KTP Berhasil Didaftarkan!");
+      beepSuccessPairing();
+    }
+    // 3. KONDISI AKSES DITOLAK (KTP BELUM TERDAFTAR)
+    else {
+      Serial.println("🚫 [AKSES DITOLAK] e-KTP belum terdaftar di aplikasi KAWAN!");
+      beepAccessDenied();
     }
   } else {
     Serial.print("HTTP Error: ");
@@ -294,11 +275,7 @@ void sendHeartbeat() {
     http.begin(API_URL_PING);
     http.addHeader("Content-Type", "application/json");
 
-    StaticJsonDocument<128> doc;
-    doc["device_id"] = DEVICE_ID;
-    String payload;
-    serializeJson(doc, payload);
-
+    String payload = "{\"device_id\":\"" + String(DEVICE_ID) + "\"}";
     http.POST(payload);
     http.end();
   }
