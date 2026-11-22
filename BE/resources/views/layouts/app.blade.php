@@ -9,17 +9,97 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <style>
-            .glass-card {
-                background: rgba(255, 255, 255, 0.9);
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.2);
+            :root {
+                color-scheme: dark;
+            }
+            body {
+                background-color: #0b0f19 !important;
+                color: #f1f5f9 !important;
             }
             .bg-subtle {
-                background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%);
+                background-color: #0b0f19 !important;
+                background-image: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.07) 0px, transparent 50%),
+                                  radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%) !important;
+                color: #f1f5f9 !important;
+            }
+            .glass-card {
+                background: rgba(15, 23, 42, 0.85) !important;
+                backdrop-filter: blur(12px) !important;
+                border: 1px solid rgba(51, 65, 85, 0.6) !important;
+                color: #f8fafc !important;
+            }
+            /* Dark Cards & Containers */
+            .bg-white {
+                background-color: #0f172a !important;
+                color: #f8fafc !important;
+                border-color: #1e293b !important;
+            }
+            .bg-slate-50, .bg-gray-50 {
+                background-color: #0b1120 !important;
+                border-color: #1e293b !important;
+            }
+            .bg-slate-100, .bg-gray-100 {
+                background-color: #1e293b !important;
+                color: #e2e8f0 !important;
+            }
+            /* High Contrast Text Colors for Dark Mode */
+            .text-slate-900, .text-slate-800, .text-gray-900, .text-gray-800 {
+                color: #f8fafc !important;
+            }
+            .text-slate-700, .text-gray-700 {
+                color: #e2e8f0 !important;
+            }
+            .text-slate-600, .text-gray-600 {
+                color: #cbd5e1 !important;
+            }
+            .text-slate-500, .text-gray-500 {
+                color: #94a3b8 !important;
+            }
+            .text-slate-400, .text-gray-400 {
+                color: #94a3b8 !important;
+            }
+            /* Subtle Dark Borders */
+            .border-slate-100, .border-slate-200, .border-gray-100, .border-gray-200, .border-blue-100 {
+                border-color: #1e293b !important;
+            }
+            .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+            .divide-slate-200 > :not([hidden]) ~ :not([hidden]),
+            .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+            .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+                border-color: #1e293b !important;
+            }
+            /* Tables Hover */
+            table tr:hover {
+                background-color: rgba(30, 41, 59, 0.45) !important;
+            }
+            /* Form inputs in Dark Mode */
+            input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+            select, textarea {
+                background-color: #0f172a !important;
+                border-color: #334155 !important;
+                color: #f8fafc !important;
+            }
+            input::placeholder, textarea::placeholder {
+                color: #64748b !important;
+            }
+            /* Custom Dark Scrollbars */
+            ::-webkit-scrollbar {
+                width: 8px;
+                height: 8px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #0b0f19;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #1e293b;
+                border-radius: 4px;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #334155;
             }
         </style>
     </head>
-    <body class="font-sans antialiased bg-subtle">
+    <body class="font-sans antialiased bg-subtle" style="background-color: #0b0f19; color: #f1f5f9;">
         <div class="min-h-screen" x-data>
             @include('layouts.navigation')
 
@@ -45,8 +125,8 @@
             <div class="lg:ml-72 transition-all duration-300">
                 
                 @isset($header)
-                    <header class="bg-white/50 backdrop-blur-md border-b border-blue-100 lg:sticky lg:top-0 z-30">
-                        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    <header class="backdrop-blur-md lg:sticky lg:top-0 z-30" style="background: rgba(11, 15, 25, 0.85); border-bottom: 1px solid #1e293b; color: #f8fafc;">
+                        <div class="max-w-7xl mx-auto py-5 px-4 sm:px-6 lg:px-8">
                             {{ $header }}
                         </div>
                     </header>
