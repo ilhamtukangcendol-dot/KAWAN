@@ -25,3 +25,4 @@ trap "kill $BE_PID $FE_PID 2>/dev/null; exit" SIGINT SIGTERM
 echo "Backend PID: $BE_PID | Frontend PID: $FE_PID"
 echo "Tekan Ctrl+C untuk menghentikan kedua server."
 wait
+

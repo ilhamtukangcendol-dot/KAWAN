@@ -20,3 +20,4 @@ echo ========================================================
 echo Kedua server sedang berjalan di jendela terminal terpisah.
 echo Anda dapat menutup jendela ini.
 pause
+

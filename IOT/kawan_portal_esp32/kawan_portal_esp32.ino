@@ -3,26 +3,49 @@
  * KAWAN 2026 - SISTEM IOT PORTAL GERBANG OTOMATIS BERBASIS ESP32 & e-KTP RFID/NFC
  * ==================================================================================
  * 
- * Hardware Requirements:
- * 1. ESP32 DevKit V1 (30 pin / 38 pin)
- * 2. RFID/NFC Reader Module: MFRC522 (RC522) atau PN532 (SPI Mode)
- * 3. 1-Channel Relay Module 5V (Mengendalikan Motor Palang / Magnetic Lock / Solenoid)
- * 4. Active Buzzer 5V & Dual LED (Hijau & Merah)
+ * Mendukung 2 Jenis Board:
+ * 1. Arduino Nano ESP32
+ * 2. ESP32 Standar DevKit (30 pin / 38 pin)
  * 
- * Pinout Wiring ESP32 to RC522:
- * - RC522 SDA (SS)   -> ESP32 GPIO 5
- * - RC522 SCK        -> ESP32 GPIO 18
- * - RC522 MOSI       -> ESP32 GPIO 23
- * - RC522 MISO       -> ESP32 GPIO 19
- * - RC522 RST        -> ESP32 GPIO 22
- * - RC522 3.3V       -> ESP32 3.3V (PERHATIAN: JANGAN KE 5V!)
- * - RC522 GND        -> ESP32 GND
+ * ==================================================================================
+ * TABEL WIRING PINOUT:
+ * ==================================================================================
  * 
- * Pinout Perangkat Tambahan:
- * - Relay IN         -> ESP32 GPIO 26 (Active LOW)
- * - Buzzer (+)       -> ESP32 GPIO 27
- * - LED Hijau (+)    -> ESP32 GPIO 14
- * - LED Merah (+)    -> ESP32 GPIO 12
+ * 1. Wiring RC522 ke Arduino Nano ESP32:
+ *   RC522   | Pin Arduino Nano ESP32 | Keterangan
+ *   --------|------------------------|---------------------------------
+ *   SDA(SS) | Pin D10 (GPIO 21)      | SPI Slave Select
+ *   SCK     | Pin D13 (GPIO 48)      | SPI Clock
+ *   MOSI    | Pin D11 (GPIO 38)      | SPI MOSI
+ *   MISO    | Pin D12 (GPIO 47)      | SPI MISO
+ *   RST     | Pin D9  (GPIO 18)      | Reset Pin
+ *   GND     | GND                    | Ground Bersama
+ *   3.3V    | 3V3                    | ⚠️ WAJIB 3.3V (JANGAN KE 5V / VBUS!)
+ * 
+ *   Perangkat Tambahan (Arduino Nano ESP32):
+ *   - Relay IN    -> Pin D8 (GPIO 17) [Active LOW]
+ *   - Buzzer (+)  -> Pin D7 (GPIO 10)
+ *   - LED Hijau   -> Pin D6 (GPIO 9)
+ *   - LED Merah   -> Pin D5 (GPIO 8)
+ * 
+ * ----------------------------------------------------------------------------------
+ * 
+ * 2. Wiring RC522 ke ESP32 Standar (DevKit 30/38 pin):
+ *   RC522   | Pin ESP32 DevKit       | Keterangan
+ *   --------|------------------------|---------------------------------
+ *   SDA(SS) | GPIO 5                 | SPI Slave Select
+ *   SCK     | GPIO 18                | SPI Clock
+ *   MOSI    | GPIO 23                | SPI MOSI
+ *   MISO    | GPIO 19                | SPI MISO
+ *   RST     | GPIO 22                | Reset Pin
+ *   GND     | GND                    | Ground Bersama
+ *   3.3V    | 3.3V                   | ⚠️ WAJIB 3.3V (JANGAN KE 5V / VIN!)
+ * 
+ *   Perangkat Tambahan (ESP32 DevKit):
+ *   - Relay IN    -> GPIO 26 [Active LOW]
+ *   - Buzzer (+)  -> GPIO 27
+ *   - LED Hijau   -> GPIO 14
+ *   - LED Merah   -> GPIO 12
  * ==================================================================================
  */
 
@@ -31,6 +54,30 @@
 #include <SPI.h>
 #include <MFRC522.h>
 #include <ArduinoJson.h>
+
+// ==================================================================================
+// PILIH TIPE BOARD ESP32:
+// Jika memakai Arduino Nano ESP32, hilangkan tanda // pada baris di bawah:
+// ==================================================================================
+// #define BOARD_ARDUINO_NANO_ESP32
+
+#if defined(ARDUINO_NANO_ESP32) || defined(BOARD_ARDUINO_NANO_ESP32)
+  #define BOARD_NAME "Arduino Nano ESP32"
+  #define SS_PIN     D10   // Pin D10 (GPIO 21)
+  #define RST_PIN    D9    // Pin D9 (GPIO 18)
+  #define RELAY_PIN  D8    // Pin D8 (GPIO 17)
+  #define BUZZER_PIN D7    // Pin D7 (GPIO 10)
+  #define LED_GREEN  D6    // Pin D6 (GPIO 9)
+  #define LED_RED    D5    // Pin D5 (GPIO 8)
+#else
+  #define BOARD_NAME "ESP32 DevKit Standar (30/38 Pin)"
+  #define SS_PIN     5     // GPIO 5
+  #define RST_PIN    22    // GPIO 22
+  #define RELAY_PIN  26    // GPIO 26
+  #define BUZZER_PIN 27    // GPIO 27
+  #define LED_GREEN  14    // GPIO 14
+  #define LED_RED    12    // GPIO 12
+#endif
 
 // ----------------- KONFIGURASI WI-FI -----------------
 const char* WIFI_SSID     = "NAMA_WIFI_PERUMAHAN";
@@ -42,22 +89,18 @@ const char* API_URL_PING = "https://kawan.unique-monsters.my.id/api/iot/portal/p
 const char* DEVICE_ID    = "PORTAL-GATE-01";
 const char* DEVICE_KEY   = "kawan_esp32_secret_2026";
 
-// ----------------- KONFIGURASI PIN HARDWARE -----------------
-#define SS_PIN    5
-#define RST_PIN   22
-#define RELAY_PIN 26
-#define BUZZER_PIN 27
-#define LED_GREEN 14
-#define LED_RED   12
-
 MFRC522 rfid(SS_PIN, RST_PIN);
 unsigned long lastPingTime = 0;
-const unsigned long pingInterval = 30000; // Ping server tiap 30 detik
+const unsigned long pingInterval = 30000; // Ping heartbeat tiap 30 detik
 
 void setup() {
   Serial.begin(115200);
   delay(1000);
-  Serial.println("\n[KAWAN 2026] Inisialisasi Sistem Portal Gerbang IoT...");
+  Serial.println("\n========================================================");
+  Serial.println("  [KAWAN 2026] SISTEM IOT PORTAL GERBANG OTOMATIS");
+  Serial.print("  [BOARD] Tipe Board: ");
+  Serial.println(BOARD_NAME);
+  Serial.println("========================================================");
 
   // Setup Pin IO
   pinMode(RELAY_PIN, OUTPUT);
@@ -283,4 +326,3 @@ void connectWiFi() {
     Serial.println("\n[WiFi] Gagal terhubung. Akan dicoba lagi nanti.");
   }
 }
-

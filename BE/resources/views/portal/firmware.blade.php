@@ -66,68 +66,154 @@
         </div>
 
         <!-- TABEL SKEMATIK WIRING PINOUT -->
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
-            <h2 class="text-sm font-black text-white flex items-center gap-2">
-                <span>🔌</span> Skematik Pinout ESP32 ke Modul RC522 & Relay
-            </h2>
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-6">
+            <div>
+                <h2 class="text-sm font-black text-white flex items-center gap-2">
+                    <span>🔌</span> Skematik Pinout Modul RC522 (RFID) ke ESP32
+                </h2>
+                <p class="text-xs text-slate-400 mt-1">
+                    Pilih skema sesuai tipe board mikrokontroler yang Anda gunakan.
+                </p>
+            </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-slate-300">
-                    <thead>
-                        <tr class="bg-slate-950 border-b border-slate-800 text-[10px] font-black uppercase text-slate-400">
-                            <th class="py-2.5 px-4">Pin Modul RC522 (RFID)</th>
-                            <th class="py-2.5 px-4">Pin ESP32</th>
-                            <th class="py-2.5 px-4">Keterangan</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-800/60 font-mono">
-                        <tr>
-                            <td class="py-2.5 px-4 text-cyan-300 font-bold">SDA / SS</td>
-                            <td class="py-2.5 px-4 text-white font-bold">GPIO 5</td>
-                            <td class="py-2.5 px-4 font-sans text-slate-400">SPI Slave Select</td>
-                        </tr>
-                        <tr>
-                            <td class="py-2.5 px-4 text-cyan-300 font-bold">SCK</td>
-                            <td class="py-2.5 px-4 text-white font-bold">GPIO 18</td>
-                            <td class="py-2.5 px-4 font-sans text-slate-400">SPI Serial Clock</td>
-                        </tr>
-                        <tr>
-                            <td class="py-2.5 px-4 text-cyan-300 font-bold">MOSI</td>
-                            <td class="py-2.5 px-4 text-white font-bold">GPIO 23</td>
-                            <td class="py-2.5 px-4 font-sans text-slate-400">SPI Master Out Slave In</td>
-                        </tr>
-                        <tr>
-                            <td class="py-2.5 px-4 text-cyan-300 font-bold">MISO</td>
-                            <td class="py-2.5 px-4 text-white font-bold">GPIO 19</td>
-                            <td class="py-2.5 px-4 font-sans text-slate-400">SPI Master In Slave Out</td>
-                        </tr>
-                        <tr>
-                            <td class="py-2.5 px-4 text-cyan-300 font-bold">RST</td>
-                            <td class="py-2.5 px-4 text-white font-bold">GPIO 22</td>
-                            <td class="py-2.5 px-4 font-sans text-slate-400">Reset Pin</td>
-                        </tr>
-                        <tr class="bg-amber-950/20 font-bold">
-                            <td class="py-2.5 px-4 text-amber-300">3.3V (VCC)</td>
-                            <td class="py-2.5 px-4 text-amber-300">3V3</td>
-                            <td class="py-2.5 px-4 font-sans text-amber-300">PERHATIAN: RC522 WAJIB 3.3V (JANGAN KE 5V!)</td>
-                        </tr>
-                        <tr>
-                            <td class="py-2.5 px-4 text-slate-400">GND</td>
-                            <td class="py-2.5 px-4 text-white">GND</td>
-                            <td class="py-2.5 px-4 font-sans text-slate-400">Ground Bersama</td>
-                        </tr>
-                        <tr class="bg-indigo-950/20">
-                            <td class="py-2.5 px-4 text-indigo-300 font-bold">Relay (IN)</td>
-                            <td class="py-2.5 px-4 text-white font-bold">GPIO 26</td>
-                            <td class="py-2.5 px-4 font-sans text-slate-400">Trigger Motor Palang / Magnetic Lock (Active LOW)</td>
-                        </tr>
-                        <tr class="bg-indigo-950/20">
-                            <td class="py-2.5 px-4 text-indigo-300 font-bold">Buzzer (+)</td>
-                            <td class="py-2.5 px-4 text-white font-bold">GPIO 27</td>
-                            <td class="py-2.5 px-4 font-sans text-slate-400">Buzzer Notifikasi (Beep 1x: Buka, Beep 3x: Ditolak)</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- ARDUINO NANO ESP32 -->
+                <div class="bg-slate-950/60 border border-indigo-500/30 rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center justify-between border-b border-indigo-500/20 pb-2">
+                        <span class="text-xs font-black text-indigo-300 flex items-center gap-1.5">
+                            <span>🟦</span> 1. Arduino Nano ESP32
+                        </span>
+                        <span class="text-[9px] bg-indigo-500/20 text-indigo-300 font-bold px-2 py-0.5 rounded-full">Nano Form Factor</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead>
+                                <tr class="border-b border-slate-800 text-[9px] font-black uppercase text-slate-400">
+                                    <th class="py-1.5 px-2">Pin RC522</th>
+                                    <th class="py-1.5 px-2">Pin Nano ESP32</th>
+                                    <th class="py-1.5 px-2">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/40 font-mono text-[11px]">
+                                <tr>
+                                    <td class="py-1.5 px-2 text-cyan-300 font-bold">SDA (SS)</td>
+                                    <td class="py-1.5 px-2 text-white font-bold">Pin D10 <span class="text-[9px] text-slate-500">(GPIO 21)</span></td>
+                                    <td class="py-1.5 px-2 font-sans text-slate-400 text-[10px]">SPI Slave Select</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1.5 px-2 text-cyan-300 font-bold">SCK</td>
+                                    <td class="py-1.5 px-2 text-white font-bold">Pin D13 <span class="text-[9px] text-slate-500">(GPIO 48)</span></td>
+                                    <td class="py-1.5 px-2 font-sans text-slate-400 text-[10px]">SPI Clock</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1.5 px-2 text-cyan-300 font-bold">MOSI</td>
+                                    <td class="py-1.5 px-2 text-white font-bold">Pin D11 <span class="text-[9px] text-slate-500">(GPIO 38)</span></td>
+                                    <td class="py-1.5 px-2 font-sans text-slate-400 text-[10px]">SPI MOSI</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1.5 px-2 text-cyan-300 font-bold">MISO</td>
+                                    <td class="py-1.5 px-2 text-white font-bold">Pin D12 <span class="text-[9px] text-slate-500">(GPIO 47)</span></td>
+                                    <td class="py-1.5 px-2 font-sans text-slate-400 text-[10px]">SPI MISO</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1.5 px-2 text-cyan-300 font-bold">RST</td>
+                                    <td class="py-1.5 px-2 text-white font-bold">Pin D9 <span class="text-[9px] text-slate-500">(GPIO 18)</span></td>
+                                    <td class="py-1.5 px-2 font-sans text-slate-400 text-[10px]">Reset Pin</td>
+                                </tr>
+                                <tr class="bg-amber-950/20 font-bold">
+                                    <td class="py-1.5 px-2 text-amber-300">3.3V</td>
+                                    <td class="py-1.5 px-2 text-amber-300">3V3</td>
+                                    <td class="py-1.5 px-2 font-sans text-amber-300 text-[10px]">⚠️ JANGAN KE 5V/VBUS!</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1.5 px-2 text-slate-400">GND</td>
+                                    <td class="py-1.5 px-2 text-white">GND</td>
+                                    <td class="py-1.5 px-2 font-sans text-slate-400 text-[10px]">Ground</td>
+                                </tr>
+                                <tr class="bg-indigo-950/30">
+                                    <td class="py-1.5 px-2 text-indigo-300 font-bold">Relay IN</td>
+                                    <td class="py-1.5 px-2 text-white font-bold">Pin D8 <span class="text-[9px] text-slate-500">(GPIO 17)</span></td>
+                                    <td class="py-1.5 px-2 font-sans text-slate-400 text-[10px]">Trigger Gerbang (Active LOW)</td>
+                                </tr>
+                                <tr class="bg-indigo-950/30">
+                                    <td class="py-1.5 px-2 text-indigo-300 font-bold">Buzzer (+)</td>
+                                    <td class="py-1.5 px-2 text-white font-bold">Pin D7 <span class="text-[9px] text-slate-500">(GPIO 10)</span></td>
+                                    <td class="py-1.5 px-2 font-sans text-slate-400 text-[10px]">Buzzer Audio</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ESP32 STANDAR DEVKIT -->
+                <div class="bg-slate-950/60 border border-cyan-500/30 rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2">
+                        <span class="text-xs font-black text-cyan-300 flex items-center gap-1.5">
+                            <span>🟩</span> 2. ESP32 DevKit Standar (30/38 Pin)
+                        </span>
+                        <span class="text-[9px] bg-cyan-500/20 text-cyan-300 font-bold px-2 py-0.5 rounded-full">NodeMCU / DOIT</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead>
+                                <tr class="border-b border-slate-800 text-[9px] font-black uppercase text-slate-400">
+                                    <th class="py-1.5 px-2">Pin RC522</th>
+                                    <th class="py-1.5 px-2">Pin ESP32 DevKit</th>
+                                    <th class="py-1.5 px-2">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/40 font-mono text-[11px]">
+                                <tr>
+                                    <td class="py-1.5 px-2 text-cyan-300 font-bold">SDA (SS)</td>
+                                    <td class="py-1.5 px-2 text-white font-bold">GPIO 5</td>
+                                    <td class="py-1.5 px-2 font-sans text-slate-400 text-[10px]">SPI Slave Select</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1.5 px-2 text-cyan-300 font-bold">SCK</td>
+                                    <td class="py-1.5 px-2 text-white font-bold">GPIO 18</td>
+                                    <td class="py-1.5 px-2 font-sans text-slate-400 text-[10px]">SPI Clock</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1.5 px-2 text-cyan-300 font-bold">MOSI</td>
+                                    <td class="py-1.5 px-2 text-white font-bold">GPIO 23</td>
+                                    <td class="py-1.5 px-2 font-sans text-slate-400 text-[10px]">SPI MOSI</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1.5 px-2 text-cyan-300 font-bold">MISO</td>
+                                    <td class="py-1.5 px-2 text-white font-bold">GPIO 19</td>
+                                    <td class="py-1.5 px-2 font-sans text-slate-400 text-[10px]">SPI MISO</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1.5 px-2 text-cyan-300 font-bold">RST</td>
+                                    <td class="py-1.5 px-2 text-white font-bold">GPIO 22</td>
+                                    <td class="py-1.5 px-2 font-sans text-slate-400 text-[10px]">Reset Pin</td>
+                                </tr>
+                                <tr class="bg-amber-950/20 font-bold">
+                                    <td class="py-1.5 px-2 text-amber-300">3.3V</td>
+                                    <td class="py-1.5 px-2 text-amber-300">3.3V</td>
+                                    <td class="py-1.5 px-2 font-sans text-amber-300 text-[10px]">⚠️ JANGAN KE 5V/VIN!</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1.5 px-2 text-slate-400">GND</td>
+                                    <td class="py-1.5 px-2 text-white">GND</td>
+                                    <td class="py-1.5 px-2 font-sans text-slate-400 text-[10px]">Ground</td>
+                                </tr>
+                                <tr class="bg-indigo-950/30">
+                                    <td class="py-1.5 px-2 text-indigo-300 font-bold">Relay IN</td>
+                                    <td class="py-1.5 px-2 text-white font-bold">GPIO 26</td>
+                                    <td class="py-1.5 px-2 font-sans text-slate-400 text-[10px]">Trigger Gerbang (Active LOW)</td>
+                                </tr>
+                                <tr class="bg-indigo-950/30">
+                                    <td class="py-1.5 px-2 text-indigo-300 font-bold">Buzzer (+)</td>
+                                    <td class="py-1.5 px-2 text-white font-bold">GPIO 27</td>
+                                    <td class="py-1.5 px-2 font-sans text-slate-400 text-[10px]">Buzzer Audio</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
 
