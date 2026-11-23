@@ -90,22 +90,21 @@ class RfidController extends Controller
                 'scanned_uid' => $cleanUid
             ]);
 
-            // Catat riwayat log
-            IotPortalLog::create([
-                'device_id' => $deviceId,
-                'rfid_uid' => $cleanUid,
-                'user_id' => $targetUser->id,
-                'status' => 'granted',
-                'access_type' => 'pairing',
-                'user_name' => $targetUser->name,
-                'keterangan' => 'Kartu e-KTP berhasil didaftarkan untuk: ' . $targetUser->name . ' (' . $targetUser->role_label . ')',
-            ]);
-
-            ActivityLog::record(
-                ActivityLog::TYPE_ACCESS,
-                'Registrasi e-KTP via ESP32',
-                'e-KTP UID ' . $cleanUid . ' berhasil didaftarkan untuk ' . $targetUser->name
-            );
+            // Catat riwayat log portal
+            try {
+                IotPortalLog::create([
+                    'device_id' => $deviceId,
+                    'rfid_uid' => $cleanUid,
+                    'user_id' => $targetUser->id,
+                    'status' => 'granted',
+                    'access_type' => 'pairing',
+                    'user_name' => $targetUser->name,
+                    'keterangan' => 'Kartu e-KTP berhasil didaftarkan untuk: ' . $targetUser->name . ' (' . $targetUser->role_label . ')',
+                ]);
+                ActivityLog::log('Registrasi e-KTP via ESP32', 'e-KTP UID ' . $cleanUid . ' berhasil didaftarkan untuk ' . $targetUser->name);
+            } catch (\Throwable $e) {
+                // Jangan gagalkan respon jika pencatatan log pendukung bermasalah
+            }
 
             return response()->json([
                 'success' => true,
@@ -148,21 +147,20 @@ class RfidController extends Controller
             }
 
             // Akses DITERIMA! Palang gerbang terbuka
-            IotPortalLog::create([
-                'device_id' => $deviceId,
-                'rfid_uid' => $cleanUid,
-                'user_id' => $user->id,
-                'status' => 'granted',
-                'access_type' => 'rfid_tap',
-                'user_name' => $user->name,
-                'keterangan' => 'Akses Diterima: ' . $user->name . ' (' . $user->role_label . ') membuka palang gerbang.',
-            ]);
-
-            ActivityLog::record(
-                ActivityLog::TYPE_ACCESS,
-                'Akses Portal Gerbang',
-                'Warga ' . $user->name . ' membuka portal gerbang dengan e-KTP UID ' . $cleanUid
-            );
+            try {
+                IotPortalLog::create([
+                    'device_id' => $deviceId,
+                    'rfid_uid' => $cleanUid,
+                    'user_id' => $user->id,
+                    'status' => 'granted',
+                    'access_type' => 'rfid_tap',
+                    'user_name' => $user->name,
+                    'keterangan' => 'Akses Diterima: ' . $user->name . ' (' . $user->role_label . ') membuka palang gerbang.',
+                ]);
+                ActivityLog::log('Akses Portal Gerbang', 'Warga ' . $user->name . ' membuka portal gerbang dengan e-KTP UID ' . $cleanUid);
+            } catch (\Throwable $e) {
+                // Ignore log errors
+            }
 
             return response()->json([
                 'success' => true,
@@ -180,15 +178,19 @@ class RfidController extends Controller
         }
 
         // 4. KONDISI C: KARTU BELUM TERDAFTAR (AKSES DITOLAK)
-        IotPortalLog::create([
-            'device_id' => $deviceId,
-            'rfid_uid' => $cleanUid,
-            'user_id' => null,
-            'status' => 'denied',
-            'access_type' => 'rfid_tap',
-            'user_name' => 'Tamu / Kartu Tak Dikenal',
-            'keterangan' => 'Akses Ditolak: e-KTP UID [' . $cleanUid . '] belum terdaftar di aplikasi KAWAN.',
-        ]);
+        try {
+            IotPortalLog::create([
+                'device_id' => $deviceId,
+                'rfid_uid' => $cleanUid,
+                'user_id' => null,
+                'status' => 'denied',
+                'access_type' => 'rfid_tap',
+                'user_name' => 'Tamu / Kartu Tak Dikenal',
+                'keterangan' => 'Akses Ditolak: e-KTP UID [' . $cleanUid . '] belum terdaftar di aplikasi KAWAN.',
+            ]);
+        } catch (\Throwable $e) {
+            // Ignore log error
+        }
 
         return response()->json([
             'success' => false,
