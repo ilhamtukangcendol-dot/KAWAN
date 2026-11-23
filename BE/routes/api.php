@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\DatabaseMigrationController;
 use App\Http\Controllers\DeployWebhookController;
 use App\Http\Controllers\IotPortalController;
+use App\Http\Controllers\RfidController;
 
 // Public API routes
 Route::post('/login', [ApiController::class, 'login']);
@@ -13,6 +14,12 @@ Route::post('/register', [ApiController::class, 'register']);
 Route::get('/public-data', [ApiController::class, 'getPublicData']);
 Route::get('/database/status', [DatabaseMigrationController::class, 'apiStatus']);
 Route::match(['get', 'post'], '/deploy-webhook', [DeployWebhookController::class, 'deploy']);
+
+// RFID / e-KTP Device API (ESP32 Kelompok - Bebas CSRF)
+Route::prefix('rfid')->group(function () {
+    Route::post('/tap', [RfidController::class, 'tap']);
+    Route::post('/heartbeat', [RfidController::class, 'heartbeat']);
+});
 
 // IoT RFID / NFC Portal Gate Routes (ESP32 Hardware)
 Route::prefix('iot/portal')->group(function () {
