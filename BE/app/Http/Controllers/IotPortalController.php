@@ -21,17 +21,18 @@ class IotPortalController extends Controller
     {
         $user = Auth::user();
 
-        // Ambil data perangkat gerbang utama
-        $device = IotDevice::firstOrCreate(
-            ['device_id' => 'PORTAL-GATE-01'],
-            [
-                'name' => 'Portal Gerbang Utama Perumahan',
-                'location' => 'Pos Keamanan & Portal RT 01 / RW 05',
-                'secret_key' => 'kawan_esp32_secret_2026',
-                'status' => 'online',
-                'last_ping_at' => now(),
-            ]
-        );
+        // Ambil data perangkat gerbang yang paling terakhir aktif, atau default PORTAL-GATE-01
+        $device = IotDevice::orderByDesc('last_ping_at')->first()
+            ?? IotDevice::firstOrCreate(
+                ['device_id' => 'PORTAL-GATE-01'],
+                [
+                    'name' => 'Portal Gerbang Utama Perumahan',
+                    'location' => 'Pos Keamanan & Portal RT 01 / RW 05',
+                    'secret_key' => 'kawan_esp32_secret_2026',
+                    'status' => 'online',
+                    'last_ping_at' => now(),
+                ]
+            );
 
         // Ambil 10 log akses terbaru
         if ($user->role == User::ROLE_WARGA) {
@@ -48,12 +49,17 @@ class IotPortalController extends Controller
                 ->get();
         }
 
+        // Cek status online (dari Cache RFID, perangkat aktif, atau ping terbaru dalam 2 menit)
+        $isDeviceOnline = \Illuminate\Support\Facades\Cache::get('rfid_reader_online', false)
+            || ($device && $device->is_online)
+            || IotDevice::where('last_ping_at', '>=', now()->subMinutes(2))->exists();
+
         // Statistik portal
         $stats = [
             'total_registered' => User::whereNotNull('rfid_uid')->count(),
             'total_granted_today' => IotPortalLog::where('status', 'granted')->whereDate('created_at', today())->count(),
             'total_denied_today' => IotPortalLog::where('status', 'denied')->whereDate('created_at', today())->count(),
-            'device_online' => $device->is_online,
+            'device_online' => $isDeviceOnline,
         ];
 
         // Daftar warga dan kartu KTP (untuk admin/pengurus)
@@ -499,11 +505,18 @@ class IotPortalController extends Controller
     public function apiStatus(Request $request)
     {
         $latestLog = IotPortalLog::latest()->first();
-        $device = IotDevice::where('device_id', 'PORTAL-GATE-01')->first();
+        $device = IotDevice::orderByDesc('last_ping_at')->first()
+            ?? IotDevice::where('device_id', 'PORTAL-GATE-01')->first();
+
+        $isDeviceOnline = \Illuminate\Support\Facades\Cache::get('rfid_reader_online', false)
+            || ($device && $device->is_online)
+            || IotDevice::where('last_ping_at', '>=', now()->subMinutes(2))->exists();
 
         return response()->json([
-            'device_online' => $device ? $device->is_online : false,
-            'last_ping' => $device && $device->last_ping_at ? $device->last_ping_at->diffForHumans() : null,
+            'device_online' => $isDeviceOnline,
+            'device_id' => $device ? $device->device_id : 'PORTAL-GATE-01',
+            'device_name' => $device ? $device->name : 'Portal Gerbang Utama',
+            'last_ping' => $device && $device->last_ping_at ? $device->last_ping_at->diffForHumans() : ($isDeviceOnline ? 'Baru saja' : 'Offline'),
             'latest_log' => $latestLog ? [
                 'id' => $latestLog->id,
                 'status' => $latestLog->status,

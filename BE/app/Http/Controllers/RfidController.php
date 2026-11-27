@@ -51,9 +51,9 @@ class RfidController extends Controller
         $cleanUid = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $rawUid));
 
         // Simpan status online alat di Cache
-        Cache::put('rfid_reader_online', true, 60);
-        Cache::put('rfid_last_uid', $cleanUid, 60);
-        Cache::put('rfid_last_device', $deviceId, 60);
+        Cache::put('rfid_reader_online', true, 180);
+        Cache::put('rfid_last_uid', $cleanUid, 180);
+        Cache::put('rfid_last_device', $deviceId, 180);
 
         // Sinkronisasi status perangkat ke database
         IotDevice::updateOrCreate(
@@ -62,6 +62,16 @@ class RfidController extends Controller
                 'name' => 'ESP32 RFID Scanner Kelompok',
                 'location' => 'Portal Gerbang Utama Perumahan',
                 'secret_key' => 'smartrw-rfid-device',
+                'status' => 'online',
+                'ip_address' => $request->ip(),
+                'last_ping_at' => now(),
+            ]
+        );
+        IotDevice::updateOrCreate(
+            ['device_id' => 'PORTAL-GATE-01'],
+            [
+                'name' => 'Portal Gerbang Utama Perumahan',
+                'location' => 'Pos Keamanan & Portal RT 01 / RW 05',
                 'status' => 'online',
                 'ip_address' => $request->ip(),
                 'last_ping_at' => now(),
@@ -220,11 +230,11 @@ class RfidController extends Controller
         $deviceId = $request->input('device_id', 'esp32-scanner-01');
         $ip = $request->input('ip', $request->ip());
 
-        // Simpan status online alat di Cache Laravel (durasi 30 detik)
-        Cache::put('rfid_reader_online', true, 30);
-        Cache::put('rfid_device_id', $deviceId, 30);
-        Cache::put('rfid_device_ip', $ip, 30);
-        Cache::put('rfid_last_heartbeat', now()->toDateTimeString(), 30);
+        // Simpan status online alat di Cache Laravel (durasi 180 detik)
+        Cache::put('rfid_reader_online', true, 180);
+        Cache::put('rfid_device_id', $deviceId, 180);
+        Cache::put('rfid_device_ip', $ip, 180);
+        Cache::put('rfid_last_heartbeat', now()->toDateTimeString(), 180);
 
         // Update status perangkat di database
         IotDevice::updateOrCreate(
@@ -233,6 +243,16 @@ class RfidController extends Controller
                 'name' => 'ESP32 RFID Scanner Kelompok',
                 'location' => 'Portal Gerbang Utama Perumahan',
                 'secret_key' => 'smartrw-rfid-device',
+                'status' => 'online',
+                'ip_address' => $ip,
+                'last_ping_at' => now(),
+            ]
+        );
+        IotDevice::updateOrCreate(
+            ['device_id' => 'PORTAL-GATE-01'],
+            [
+                'name' => 'Portal Gerbang Utama Perumahan',
+                'location' => 'Pos Keamanan & Portal RT 01 / RW 05',
                 'status' => 'online',
                 'ip_address' => $ip,
                 'last_ping_at' => now(),

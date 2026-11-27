@@ -85,10 +85,10 @@
                     <span class="text-xl">📡</span>
                 </div>
                 <div class="flex items-center gap-2 mt-2">
-                    <span class="w-3 h-3 rounded-full {{ $stats['device_online'] ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500' }}"></span>
-                    <p class="text-lg font-black text-white">{{ $stats['device_online'] ? 'Online & Siap' : 'Menunggu Sinyal' }}</p>
+                    <span id="esp32-status-dot" class="w-3 h-3 rounded-full {{ $stats['device_online'] ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500' }}"></span>
+                    <p id="esp32-status-text" class="text-lg font-black {{ $stats['device_online'] ? 'text-emerald-400' : 'text-white' }}">{{ $stats['device_online'] ? 'Online & Siap' : 'Menunggu Sinyal' }}</p>
                 </div>
-                <p class="text-[10px] text-slate-400 font-bold mt-1">{{ $device->name }} ({{ $device->device_id }})</p>
+                <p id="esp32-device-label" class="text-[10px] text-slate-400 font-bold mt-1">{{ $device->name }} ({{ $device->device_id }})</p>
             </div>
         </div>
 
@@ -600,12 +600,33 @@
             try {
                 const res = await fetch("{{ url('/api/iot/portal/status') }}");
                 const data = await res.json();
-                if (data && data.latest_log) {
+                if (data) {
+                    // Update status online / offline secara live
+                    const dot = document.getElementById('esp32-status-dot');
+                    const text = document.getElementById('esp32-status-text');
+                    const label = document.getElementById('esp32-device-label');
+                    if (dot && text) {
+                        if (data.device_online) {
+                            dot.className = "w-3 h-3 rounded-full bg-emerald-500 animate-pulse";
+                            text.innerText = "Online & Siap";
+                            text.className = "text-lg font-black text-emerald-400";
+                        } else {
+                            dot.className = "w-3 h-3 rounded-full bg-amber-500";
+                            text.innerText = "Menunggu Sinyal";
+                            text.className = "text-lg font-black text-white";
+                        }
+                    }
+                    if (label && data.device_name) {
+                        label.innerText = data.device_name + " (" + data.device_id + ") • " + (data.last_ping || 'Offline');
+                    }
+
                     // Jika ada tap baru yang sukses dalam beberapa detik terakhir, beri efek visual gerbang
-                    // ...
+                    if (data.latest_log && data.latest_log.status === 'granted' && data.latest_log.time_ago && (data.latest_log.time_ago.includes('detik') || data.latest_log.time_ago.includes('second'))) {
+                        // Animasi palang terbuka
+                    }
                 }
             } catch (e) {}
-        }, 5000);
+        }, 3000);
     </script>
 </x-app-layout>
 
